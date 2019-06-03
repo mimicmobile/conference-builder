@@ -1,0 +1,40 @@
+{
+  "env": {
+    "es6": true,
+    "node": true,
+    "commonjs": true
+  },
+  "extends": [
+    "plugin:vue/essential",
+    "@vue/standard"
+  ],
+  "rules": {
+    "indent": ["error", 2],
+    "vue/script-indent": [
+      "error",
+      2,
+      { "baseIndent": 1 }
+    ],
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "semi": [
+      "error",
+      "never"
+    ]
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "parser": "babel-eslint"
+  },
+  "overrides": [
+    {
+      "files": ["*.vue"],
+      "rules": {
+        "indent": "off"
+      }
+    }
+  ],
+  "root": true
+}

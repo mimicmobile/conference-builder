@@ -8,17 +8,16 @@
   import "firebase/auth"
 
   export default {
-    name: "auth",
-    mounted() {
+    mounted () {
       let uiConfig = {
         signInSuccessUrl: "/",
         signInOptions: [
-          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID
         ]
       }
       let ui = new firebaseui.auth.AuthUI(firebase.auth())
       ui.start("#firebaseui-auth-container", uiConfig)
-    },
+    }
   }
 </script>
 

@@ -2,19 +2,27 @@
   <v-container class="pt-5" v-if="isLoading">
     <v-layout justify-center>
       <v-progress-circular
-        color="accent"
         :indeterminate="true"
+        color="accent"
       ></v-progress-circular>
     </v-layout>
   </v-container>
   <v-container v-else>
-    <v-layout justify-center>Loaded!</v-layout>
+    <v-layout justify-center>
+    </v-layout>
   </v-container>
 </template>
 
 <script>
+  import firebase from "firebase/app"
+  import "firebase/firestore"
+
+  let db
   export default {
-    name: "Hello"
+    data: () => ({}),
+    mounted () {
+      db = firebase.firestore()
+    }
   }
 </script>
 
