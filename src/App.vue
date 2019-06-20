@@ -32,8 +32,12 @@
           </v-list-tile-content>
         </v-list-tile>
         <div v-if="isAbout">
-          <v-chip :key="snapshot.count" @click="aboutSnapshotClick(snapshot.id)" class="about-edits-snapshots" small
-                  v-for="snapshot in snapshots">
+          <v-chip :key="snapshot.count"
+                  :selected="aboutChipSelected(snapshot)"
+                  @click="aboutSnapshotClick(snapshot.id)"
+                  class="about-edits-snapshots"
+                  outline
+                  small v-for="snapshot in snapshots">
             {{ snapshot.date }} by {{ snapshot.author }}
           </v-chip>
         </div>
@@ -100,7 +104,7 @@
       },
       isAbout () {
         return this.$route.name === "About"
-      }
+      },
     },
     mounted () {
       firebase.firestore().collection("about").orderBy("created", "desc").limit(5).onSnapshot((aboutCollection) => {
@@ -126,6 +130,9 @@
     methods: {
       aboutSnapshotClick (id) {
         this.$router.push({ path: "/about/" + id, params: { "loadedId": id } })
+      },
+      aboutChipSelected (snapshot) {
+        return (this.$route.params.loadedId == null && snapshot.count === 0) || this.$route.params.loadedId === snapshot.id
       },
       logOut () {
         firebase.auth().signOut()
