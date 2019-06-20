@@ -26,16 +26,16 @@
             </template>
           </upload-btn>
         </v-flex>
-        <v-flex class="py-3 px-3" xs12>
+        <v-flex class="pb-3" xs12>
           <v-textarea auto-grow box label="Conference description" v-model="description"></v-textarea>
         </v-flex>
-        <v-flex class="py-3 px-3" md6 xs12>
+        <v-flex class="pb-3" md6 xs12>
           <v-text-field append-icon="fab fa-twitter" box label="Twitter" v-model="twitter"></v-text-field>
         </v-flex>
-        <v-flex class="py-3 px-3" md6 xs12>
+        <v-flex class="pb-3" md6 xs12>
           <v-text-field append-icon="fas fa-code" box label="Website" v-model="website"></v-text-field>
         </v-flex>
-        <v-flex class="py-3 px-3" md6 xs12>
+        <v-flex class="pb-3" md6 xs12>
           <v-text-field append-icon="email" box label="Email" v-model="contact_email"></v-text-field>
         </v-flex>
         <v-snackbar :timeout="timeout" absolute color="primary" v-model="isModified">
@@ -240,5 +240,11 @@
     height: auto;
     max-width: 100%;
     max-height: 300px;
+  }
+
+  @media screen and (max-width: 800px) {
+    .header-image-cont {
+      min-width: auto !important;
+    }
   }
 </style>
