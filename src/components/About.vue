@@ -15,29 +15,67 @@
             <img :src="header_image" alt class="header-image" v-if="header_image"/>
             <div class="header-text-cont">
               <span v-if="!header_image">&lt; Header Placeholder &gt;</span>
-              <v-progress-circular class="header-progress" color="accent" indeterminate
-                                   v-if="isHeaderLoading"></v-progress-circular>
+              <v-progress-circular color="accent" indeterminate v-if="isHeaderLoading"></v-progress-circular>
             </div>
           </div>
-          <upload-btn @file-update="update" color="accent" noTitleUpdate round
+          <upload-btn @file-update="updateHeaderImage" color="accent" noTitleUpdate round
                       title="Set header image">
             <template slot="icon-left">
               <v-icon>add</v-icon>
             </template>
           </upload-btn>
         </v-flex>
+
         <v-flex class="pb-3" xs12>
-          <v-textarea auto-grow box label="Conference description" v-model="description"></v-textarea>
+          <v-textarea auto-grow label="Conference description" outline v-model="description"></v-textarea>
         </v-flex>
         <v-flex class="pb-3" md6 xs12>
-          <v-text-field append-icon="fab fa-twitter" box label="Twitter" v-model="twitter"></v-text-field>
+          <v-text-field append-icon="fab fa-twitter" label="Twitter" outline v-model="twitter"></v-text-field>
         </v-flex>
         <v-flex class="pb-3" md6 xs12>
-          <v-text-field append-icon="fas fa-code" box label="Website" v-model="website"></v-text-field>
+          <v-text-field append-icon="fas fa-code" label="Website" outline v-model="website"></v-text-field>
         </v-flex>
         <v-flex class="pb-3" md6 xs12>
-          <v-text-field append-icon="email" box label="Email" v-model="contact_email"></v-text-field>
+          <v-text-field append-icon="email" label="Email" outline v-model="contact_email"></v-text-field>
         </v-flex>
+
+        <v-flex class="py-3" text-xs-left xs12>
+          <span class="title font-weight-light">Venue</span>
+        </v-flex>
+
+        <v-flex class="pb-3" md6 xs12>
+          <v-text-field append-icon="fas fa-marker" label="Name" outline v-model="venue.name"></v-text-field>
+        </v-flex>
+        <v-flex class="pb-3" md6 xs12>
+          <v-text-field append-icon="fas fa-building" label="Address" outline v-model="venue.address"></v-text-field>
+        </v-flex>
+        <v-flex class="pb-3 venue-image" md6 xs12>
+          <div class="venue-image-cont">
+            <img :src="venue.image_path" alt/>
+            <div class="venue-text-cont">
+              <v-progress-circular color="accent" indeterminate v-if="isVenueImageLoading"></v-progress-circular>
+            </div>
+          </div>
+          <upload-btn @file-update="updateVenueImage" class="venue-image-btn" color="accent" noTitleUpdate
+                      round title="Set venue image">
+            <template slot="icon-left">
+              <v-icon>add</v-icon>
+            </template>
+          </upload-btn>
+        </v-flex>
+
+        <v-flex class="py-3" text-xs-left xs12>
+          <span class="title font-weight-light">Links</span>
+        </v-flex>
+
+        <v-flex class="py-3" xs12>
+          <v-card flat>
+            <v-card-title>
+              <span class="title font-weight-light">Group name</span>
+            </v-card-title>
+          </v-card>
+        </v-flex>
+
         <v-snackbar :timeout="timeout" absolute color="primary" v-model="isModified">
           Modified
           <v-btn @click="save" color="transparent">
@@ -78,6 +116,7 @@
       timeout: 0,
       isLoading: true,
       isHeaderLoading: false,
+      isVenueImageLoading: false,
       header_image: false,
       description: null,
       twitter: null,
@@ -147,7 +186,7 @@
         this.contact_email = d.contact_email
         this.venue = d.venue
       },
-      update (file) {
+      updateHeaderImage (file) {
         let d = this
         this.isHeaderLoading = true
 
@@ -158,6 +197,22 @@
               .then((url) => {
                 d.header_image = url
                 d.isHeaderLoading = false
+
+                this.changed()
+              })
+          })
+      },
+      updateVenueImage (file) {
+        let d = this
+        this.isVenueImageLoading = true
+
+        firebase.storage().ref().child(`images/venue/${file.name}`)
+          .put(file)
+          .then((snapshot) => {
+            snapshot.ref.getDownloadURL()
+              .then((url) => {
+                d.venue.image_path = url
+                this.isVenueImageLoading = false
 
                 this.changed()
               })
@@ -214,7 +269,6 @@
     min-height: 100px;
     min-width: 800px;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
@@ -229,7 +283,6 @@
     width: auto;
     height: auto;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     position: absolute;
@@ -240,6 +293,46 @@
     height: auto;
     max-width: 100%;
     max-height: 300px;
+  }
+
+  .venue-image {
+    display: flex;
+  }
+
+  .venue-image-btn {
+    max-width: 40%;
+  }
+
+  .venue-image-cont {
+    width: auto;
+    height: auto;
+    min-height: 50%;
+    min-width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-color: #CCC;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 4px;
+  }
+
+  .venue-text-cont {
+    width: auto;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+  }
+
+  .venue-image div:hover {
+    border-color: #FFF;
+  }
+
+  .venue-image img {
+    width: 100%;
+    height: 100%;
   }
 
   @media screen and (max-width: 800px) {
