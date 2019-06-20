@@ -104,7 +104,7 @@
       },
       isAbout () {
         return this.$route.name === "About"
-      },
+      }
     },
     mounted () {
       firebase.firestore().collection("about").orderBy("created", "desc").limit(5).onSnapshot((aboutCollection) => {
