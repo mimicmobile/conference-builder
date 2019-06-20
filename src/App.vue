@@ -61,7 +61,7 @@
           ></v-progress-circular>
         </v-layout>
       </v-container>
-      <router-view :key="$route.fullPath" v-else></router-view>
+      <router-view v-else></router-view>
     </v-content>
   </v-app>
 </template>
@@ -99,7 +99,7 @@
         return this.$store.state.isLoading && this.$route.path !== "/auth"
       },
       isAbout () {
-        return this.$route.path === "/about"
+        return this.$route.name === "About"
       }
     },
     mounted () {
@@ -125,7 +125,7 @@
     },
     methods: {
       aboutSnapshotClick (id) {
-        this.$router.push({ path: "about", query: { "id": id } })
+        this.$router.push({ path: "/about/" + id, params: { "loadedId": id } })
       },
       logOut () {
         firebase.auth().signOut()

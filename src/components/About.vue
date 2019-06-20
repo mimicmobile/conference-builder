@@ -68,6 +68,12 @@
   import UploadButton from "vuetify-upload-button"
 
   export default {
+    name: "About",
+    props: ["loadedId"],
+    beforeRouteUpdate (to, from, next) {
+      this.loadId()
+      next()
+    },
     data: () => ({
       timeout: 0,
       isLoading: true,
@@ -95,6 +101,13 @@
       }
     },
     methods: {
+      loadId () {
+        firebase.firestore().collection("about")
+          .orderBy("created", "desc")
+          .limit(6)
+          .get()
+          .then((aboutCollection) => this.loadCollection(aboutCollection))
+      },
       save () {
         let update = {
           header_image: this.header_image,
@@ -110,15 +123,18 @@
           }
         }
 
+        this.resetRoute()
+
+        firebase.firestore().collection("about")
+          .add(update)
+          .then((ref) => {
+            this.currentId = ref.id
+          })
+      },
+      resetRoute () {
         this.modified = false
         this.snapshotIsOld = false
-        // this.$router.replace("/about")
-        this.$route.query.id = null
-        window.history.pushState({}, "About", "/" + window.location.href.substring(window.location.href.lastIndexOf("/") + 1).split("?")[0])
-
-        firebase.firestore().collection("about").add(update).then((ref) => {
-          this.currentId = ref.id
-        })
+        this.$router.replace("/about")
       },
       changed () {
         this.modified = true
@@ -135,14 +151,17 @@
         let d = this
         this.isHeaderLoading = true
 
-        firebase.storage().ref().child(`images/${file.name}`).put(file).then((snapshot) => {
-          snapshot.ref.getDownloadURL().then((url) => {
-            d.header_image = url
-            d.isHeaderLoading = false
+        firebase.storage().ref().child(`images/${file.name}`)
+          .put(file)
+          .then((snapshot) => {
+            snapshot.ref.getDownloadURL()
+              .then((url) => {
+                d.header_image = url
+                d.isHeaderLoading = false
 
-            this.changed()
+                this.changed()
+              })
           })
-        })
       },
       loadSnapshot (snap) {
         if (this.currentId !== null && this.currentId !== snap.id && this.modified) {
@@ -152,33 +171,35 @@
         }
         this.currentId = snap.id
         this.updateState(snap.data())
-      }
-    },
-    mounted () {
-      console.log("test")
-      firebase.firestore().collection("about").orderBy("created", "desc").limit(10).onSnapshot((aboutCollection) => {
+      },
+      loadCollection (collection) {
         this.currentIdUpdated = false
 
-        if (!aboutCollection.empty) {
-          let loadedId = this.$route.query.id
+        if (!collection.empty) {
           let wantedSnapshot = null
           this.snapshotIsOld = false
 
-          wantedSnapshot = aboutCollection.docs[0]
-          if (loadedId !== null) {
-            aboutCollection.forEach((snap) => {
-              if (snap.id === loadedId) {
+          wantedSnapshot = collection.docs[0]
+          if (this.loadedId != null) {
+            collection.forEach((snap) => {
+              if (snap.id === this.loadedId) {
                 wantedSnapshot = snap
               }
             })
           }
 
-          this.snapshotIsOld = wantedSnapshot.id !== aboutCollection.docs[0].id
+          this.snapshotIsOld = wantedSnapshot.id !== collection.docs[0].id
           this.loadSnapshot(wantedSnapshot)
         }
 
         this.isLoading = false
-      })
+      }
+    },
+    mounted () {
+      firebase.firestore().collection("about")
+        .orderBy("created", "desc")
+        .limit(6)
+        .onSnapshot((aboutCollection) => this.loadCollection(aboutCollection))
     },
     components: {
       "upload-btn": UploadButton

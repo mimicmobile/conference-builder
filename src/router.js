@@ -11,10 +11,10 @@ const router = new VueRouter({
   mode: "history",
   routes: [
     { path: "/", component: Home, meta: { name: "Home" } },
-    { path: "/speakers", component: Speakers, meta: { name: "Speakers" } },
-    { path: "/schedule", component: Schedule, meta: { name: "Schedule" } },
-    { path: "/about", component: About, meta: { name: "About" } },
-    { path: "/auth", component: Auth, meta: { name: "Auth" } }
+    { path: "/speakers", component: Speakers, name: "Speakers" },
+    { path: "/schedule", component: Schedule, name: "Schedule" },
+    { path: "/about/:loadedId?", component: About, name: "About", props: true },
+    { path: "/auth", component: Auth, name: "Auth" }
   ]
 })
 
