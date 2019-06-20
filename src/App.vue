@@ -54,7 +54,7 @@
     </v-navigation-drawer>
     <v-toolbar app clipped-left color="primary" fixed>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title>{{ $route.meta.name }}</v-toolbar-title>
+      <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
     </v-toolbar>
     <v-content>
       <v-container class="pt-5" v-if="isLoading">
