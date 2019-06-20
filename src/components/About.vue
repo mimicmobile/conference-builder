@@ -76,17 +76,17 @@
           </v-card>
         </v-flex>
 
-        <v-snackbar :timeout="timeout" absolute color="primary" v-model="isModified">
+        <v-snackbar :timeout="timeout" color="primary" v-model="isModified">
           Modified
           <v-btn @click="save" color="transparent">
             <span>Save</span>
             <v-icon>save</v-icon>
           </v-btn>
         </v-snackbar>
-        <v-snackbar absolute color="primary" v-model="currentIdUpdated">
+        <v-snackbar color="primary" v-model="currentIdUpdated">
           This page has been updated by another user!
         </v-snackbar>
-        <v-snackbar :timeout="timeout" absolute color="primary" v-model="snapshotIsOld">
+        <v-snackbar :timeout="timeout" color="primary" v-model="snapshotIsOld">
           You are viewing an old revision
           <v-btn @click="save" color="transparent">
             <span>Save as new</span>
