@@ -20,7 +20,7 @@
           <upload-btn @file-update="updateHeaderImage" color="accent" noTitleUpdate round
                       title="Set header image">
             <template slot="icon-left">
-              <v-icon>add</v-icon>
+              <v-icon small>add</v-icon>
             </template>
           </upload-btn>
         </v-flex>
@@ -58,7 +58,7 @@
           <upload-btn @file-update="updateVenueImage" class="upload-image-btn" color="accent" noTitleUpdate
                       round title="Set venue image">
             <template slot="icon-left">
-              <v-icon>add</v-icon>
+              <v-icon small>add</v-icon>
             </template>
           </upload-btn>
         </v-flex>
@@ -76,15 +76,26 @@
                 <span><a :href="link.website" target="_blank">{{ link.website }}</a></span>
                 <span>{{ linkTypeNameFromId(link.typeId) }}</span>
                 <div class="link-group-button-cont">
-                  <v-btn @click="editLink(index)" color="secondary" round>Edit link
+                  <v-btn @click="editLink(index)" color="secondary" round small>
+                    <v-icon small>edit</v-icon>
+                    &nbsp;
+                    Edit link
+                    &nbsp;
                   </v-btn>
-                  <v-btn @click="deleteLink(index)" color="secondary" round>Delete link
+                  <v-btn @click="deleteLink(index)" color="secondary" round small>
+                    <v-icon small>delete</v-icon>
+                    &nbsp;
+                    Delete link
+                    &nbsp;
                   </v-btn>
                 </div>
               </v-flex>
             </v-flex>
             <v-flex wrap xs12>
-              <v-btn @click="showNewLinkDialog" color="accent" round>Add new link</v-btn>
+              <v-btn @click="showNewLinkDialog" color="accent" round>
+                <v-icon small>add</v-icon>
+                Add new link
+              </v-btn>
             </v-flex>
           </v-card>
         </v-flex>
@@ -118,7 +129,7 @@
                     <upload-btn @file-update="updateNewLinkImage" class="upload-image-btn" color="accent" noTitleUpdate
                                 round title="Set image">
                       <template slot="icon-left">
-                        <v-icon>add</v-icon>
+                        <v-icon small>add</v-icon>
                       </template>
                     </upload-btn>
                   </v-flex>
