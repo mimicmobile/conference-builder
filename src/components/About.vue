@@ -457,10 +457,6 @@
     align-items: center;
   }
 
-  .upload-image-btn {
-    max-width: 40%;
-  }
-
   .upload-image-cont {
     width: 320px;
     height: auto;
