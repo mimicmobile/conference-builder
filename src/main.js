@@ -10,8 +10,6 @@ import firebase from "firebase/app"
 import router from "./router"
 import { config } from "./firebaseConfig"
 
-import "@fortawesome/fontawesome-free/css/all.css"
-
 import store from "./store"
 
 Vue.config.productionTip = false
@@ -21,7 +19,6 @@ Vue.use(VueRouter)
 new Vue({
   router,
   store: store,
-  iconfont: "fa",
   created () {
     firebase.initializeApp(config)
     firebase.auth().onAuthStateChanged((user) => {

@@ -32,7 +32,7 @@
           <v-text-field append-icon="fab fa-twitter" label="Twitter" outline v-model="twitter"></v-text-field>
         </v-flex>
         <v-flex class="pb-3" md6 xs12>
-          <v-text-field append-icon="fas fa-code" label="Website" outline v-model="website"></v-text-field>
+          <v-text-field append-icon="web" label="Website" outline v-model="website"></v-text-field>
         </v-flex>
         <v-flex class="pb-3" md6 xs12>
           <v-text-field append-icon="email" label="Email" outline v-model="contactEmail"></v-text-field>
@@ -43,10 +43,10 @@
         </v-flex>
 
         <v-flex class="pb-3" md6 xs12>
-          <v-text-field append-icon="fas fa-marker" label="Name" outline v-model="venueName"></v-text-field>
+          <v-text-field append-icon="business" label="Name" outline v-model="venueName"></v-text-field>
         </v-flex>
         <v-flex class="pb-3" md6 xs12>
-          <v-text-field append-icon="fas fa-building" label="Address" outline v-model="venueAddress"></v-text-field>
+          <v-text-field append-icon="map" label="Address" outline v-model="venueAddress"></v-text-field>
         </v-flex>
         <v-flex class="pb-3 upload-image" md8 xs12>
           <div class="upload-image-cont">
