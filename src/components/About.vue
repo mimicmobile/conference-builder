@@ -302,18 +302,18 @@
       },
       save () {
         let update = {
-          header_image: this.headerImage,
+          headerImage: this.headerImage,
           description: this.description,
           twitter: this.twitter,
           website: this.website,
-          contact_email: this.contactEmail,
+          contactEmail: this.contactEmail,
           venue: {
             name: this.venueName,
             address: this.venueAddress,
-            image_path: this.venueImagePath
+            imagePath: this.venueImagePath
           },
           links: this.links,
-          link_types: this.linkTypes,
+          linkTypes: this.linkTypes,
           created: firebase.firestore.FieldValue.serverTimestamp(),
           author: {
             displayName: firebase.auth().currentUser.displayName,
@@ -338,17 +338,16 @@
         this.modified = true
       },
       updateState (d) {
-        this.headerImage = d.header_image
+        this.headerImage = d.headerImage
         this.description = d.description
         this.twitter = d.twitter
         this.website = d.website
-        this.contactEmail = d.contact_email
+        this.contactEmail = d.contactEmail
         this.venueName = d.venue.name
         this.venueAddress = d.venue.address
-        this.venueImagePath = d.venue.image_path
+        this.venueImagePath = d.venue.imagePath
         this.links = d.links || []
-        this.linkTypes = d.link_types || []
-        this.sortLinkTypes()
+        this.linkTypes = d.linkTypes || []
       },
       updateImage (file, path, urlVar, loadingVar) {
         this[loadingVar] = true
@@ -382,6 +381,7 @@
         }
         this.currentId = snap.id
         this.updateState(snap.data())
+        this.sortLinkTypes()
       },
       loadCollection (collection) {
         this.currentIdUpdated = false
