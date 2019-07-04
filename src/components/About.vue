@@ -174,20 +174,21 @@
 
   import UploadButton from "vuetify-upload-button"
 
+  import { commonMixin } from "../mixins"
+
   function getPlaceholderImage (dimension) {
     return `https://via.placeholder.com/${dimension}/454545/454545`
   }
 
   export default {
     name: "About",
+    mixins: [commonMixin],
     props: ["loadedId"],
     beforeRouteUpdate (to, from, next) {
-      this.loadId()
+      this.loadId("about")
       next()
     },
     data: () => ({
-      timeout: 0,
-      isLoading: true,
       isHeaderLoading: false,
       isVenueImageLoading: false,
       isNewLinkImageLoading: false,
@@ -206,18 +207,9 @@
       newLinkTypeId: null,
       newLinkDialog: false,
       links: [],
-      linkTypes: [],
-      currentId: null,
-      currentIdUpdated: false,
-      modified: false,
-      lastChangeState: null,
-      currentState: null,
-      snapshotIsOld: false
+      linkTypes: []
     }),
     computed: {
-      isModified () {
-        return this.modified && !this.snapshotIsOld
-      },
       headerImageOrPlaceholder () {
         return this.headerImage || getPlaceholderImage("800x260")
       },
@@ -235,13 +227,6 @@
       }
     },
     methods: {
-      loadId () {
-        firebase.firestore().collection("about")
-          .orderBy("created", "desc")
-          .limit(6)
-          .get()
-          .then((aboutCollection) => this.loadCollection(aboutCollection))
-      },
       showNewLinkDialog () {
         this.newLinkName = null
         this.newLinkWebsite = null
@@ -345,9 +330,6 @@
         this.snapshotIsOld = false
         this.$router.replace("/about")
       },
-      changed () {
-        this.modified = true
-      },
       updateState (d) {
         this.headerImage = d.headerImage
         this.description = d.description
@@ -359,21 +341,6 @@
         this.venueImagePath = d.venue.imagePath
         this.links = d.links || []
         this.linkTypes = d.linkTypes || []
-      },
-      updateImage (file, path, urlVar, loadingVar) {
-        this[loadingVar] = true
-
-        firebase.storage().ref().child(`images/${path}${file.name}`)
-          .put(file)
-          .then((snapshot) => {
-            snapshot.ref.getDownloadURL()
-              .then((url) => {
-                this[urlVar] = url
-                this[loadingVar] = false
-
-                this.changed()
-              })
-          })
       },
       updateHeaderImage (file) {
         this.updateImage(file, "header/", "headerImage", "isHeaderLoading")
@@ -393,28 +360,6 @@
         this.currentId = snap.id
         this.updateState(snap.data())
         this.sortLinkTypes()
-      },
-      loadCollection (collection) {
-        this.currentIdUpdated = false
-
-        if (!collection.empty) {
-          let wantedSnapshot = null
-          this.snapshotIsOld = false
-
-          wantedSnapshot = collection.docs[0]
-          if (this.loadedId != null) {
-            collection.forEach((snap) => {
-              if (snap.id === this.loadedId) {
-                wantedSnapshot = snap
-              }
-            })
-          }
-
-          this.snapshotIsOld = wantedSnapshot.id !== collection.docs[0].id
-          this.loadSnapshot(wantedSnapshot)
-        }
-
-        this.isLoading = false
       }
     },
     mounted () {
