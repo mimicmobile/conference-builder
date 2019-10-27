@@ -18,13 +18,13 @@
                 <span>{{ speaker.name }}</span>
                 <span><a :href="speaker.company" target="_blank">{{ speaker.company }}</a></span>
                 <div class="speaker-group-button-cont">
-                  <v-btn @click="editLink(index)" color="secondary" round small>
+                  <v-btn @click="editSpeaker(index)" color="secondary" round small>
                     <v-icon small>edit</v-icon>
                     &nbsp;
                     Edit speaker
                     &nbsp;
                   </v-btn>
-                  <v-btn @click="deleteLink(index)" color="secondary" round small>
+                  <v-btn @click="deleteSpeaker(index)" color="secondary" round small>
                     <v-icon small>delete</v-icon>
                     &nbsp;
                     Delete speaker
@@ -34,7 +34,7 @@
               </v-flex>
             </v-flex>
             <v-flex wrap xs12>
-              <v-btn @click="showNewLinkDialog" color="accent" round>
+              <v-btn @click="showNewSpeakerDialog" color="accent" round>
                 <v-icon small>add</v-icon>
                 Add new speaker
               </v-btn>
@@ -166,7 +166,7 @@
       }
     },
     methods: {
-      showNewLinkDialog () {
+      showNewSpeakerDialog () {
         this.newSpeakerName = null
         this.newSpeakerBio = null
         this.newSpeakerImagePath = null
@@ -196,7 +196,39 @@
         this.newSpeakerDialog = false
         this.changed()
       },
+      editSpeaker (index) {
+        const speaker = this.speakers[index]
+
+        this.newSpeakerIndex = index
+        this.newSpeakerName = speaker.name
+        this.newSpeakerBio = speaker.bio
+        this.newSpeakerCompany = speaker.company
+        this.newSpeakerTwitter = speaker.twitter
+        this.newSpeakerLinkedIn = speaker.linkedIn
+        this.newSpeakerImagePath = speaker.imagePath
+        this.newSpeakerDialog = true
+      },
+      deleteSpeaker (index) {
+        this.speakers.splice(index, 1)
+        this.changed()
+      },
       save () {
+        const update = {
+          speakers: this.speakers,
+          created: firebase.firestore.FieldValue.serverTimestamp(),
+          author: {
+            displayName: firebase.auth().currentUser.displayName,
+            uid: firebase.auth().currentUser.uid
+          }
+        }
+
+        this.resetRoute("speakers")
+
+        firebase.firestore().collection("speakers")
+          .add(update)
+          .then((ref) => {
+            this.currentId = ref.id
+          })
       },
       updateState (d) {
         this.speakers = d.speakers || []
@@ -212,7 +244,6 @@
         }
         this.currentId = snap.id
         this.updateState(snap.data())
-        this.sortLinkTypes()
       }
     },
     mounted () {

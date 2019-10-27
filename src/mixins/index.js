@@ -23,7 +23,7 @@ export const commonMixin = {
         .orderBy("created", "desc")
         .limit(6)
         .get()
-        .then((aboutCollection) => this.loadCollection(aboutCollection))
+        .then((collection) => this.loadCollection(collection))
     },
     changed () {
       this.modified = true
@@ -38,8 +38,6 @@ export const commonMixin = {
             .then((url) => {
               this[urlVar] = url
               this[loadingVar] = false
-
-              this.changed()
             })
         })
     },
@@ -64,6 +62,11 @@ export const commonMixin = {
       }
 
       this.isLoading = false
+    },
+    resetRoute (loc) {
+      this.modified = false
+      this.snapshotIsOld = false
+      this.$router.replace("/" + loc)
     }
   }
 }

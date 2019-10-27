@@ -11,8 +11,8 @@ const router = new VueRouter({
   mode: "history",
   routes: [
     { path: "/", component: Home, meta: { name: "Home" } },
-    { path: "/speakers", component: Speakers, name: "Speakers" },
-    { path: "/schedule", component: Schedule, name: "Schedule" },
+    { path: "/speakers/:loadedId?", component: Speakers, name: "Speakers", props: true },
+    { path: "/schedule/:loadedId?", component: Schedule, name: "Schedule", props: true },
     { path: "/about/:loadedId?", component: About, name: "About", props: true },
     { path: "/auth", component: Auth, name: "Auth" }
   ]

@@ -15,6 +15,16 @@
             <v-list-tile-title>Speakers</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <div v-if="isSpeakers">
+          <v-chip :key="snapshot.count"
+                  :selected="snapshotChipSelected(snapshot)"
+                  @click="snapshotClick('speakers', snapshot.id)"
+                  class="edits-snapshots"
+                  outline
+                  small v-for="snapshot in speakerSnapshots">
+            {{ snapshot.date }} by {{ snapshot.author }}
+          </v-chip>
+        </div>
         <v-list-tile to="/schedule">
           <v-list-tile-action>
             <v-icon>schedule</v-icon>
@@ -33,11 +43,11 @@
         </v-list-tile>
         <div v-if="isAbout">
           <v-chip :key="snapshot.count"
-                  :selected="aboutChipSelected(snapshot)"
-                  @click="aboutSnapshotClick(snapshot.id)"
-                  class="about-edits-snapshots"
+                  :selected="snapshotChipSelected(snapshot)"
+                  @click="snapshotClick('about', snapshot.id)"
+                  class="edits-snapshots"
                   outline
-                  small v-for="snapshot in snapshots">
+                  small v-for="snapshot in aboutSnapshots">
             {{ snapshot.date }} by {{ snapshot.author }}
           </v-chip>
         </div>
@@ -93,7 +103,8 @@
   export default {
     data: () => ({
       drawer: null,
-      snapshots: []
+      aboutSnapshots: [],
+      speakerSnapshots: []
     }),
     computed: {
       currentUser () {
@@ -104,35 +115,52 @@
       },
       isAbout () {
         return this.$route.name === "About"
+      },
+      isSpeakers () {
+        return this.$route.name === "Speakers"
       }
     },
     mounted () {
-      firebase.firestore().collection("about").orderBy("created", "desc").limit(5).onSnapshot((aboutCollection) => {
-        this.snapshots = []
-        let count = 0
-
-        aboutCollection.forEach((snap) => {
-          if (snap.data().created !== null) {
-            this.snapshots.push({
-              "author": snap.data().author.displayName.split(" ")[0],
-              "date": getMMDDHHMM(snap.data().created.toDate()),
-              "count": count,
-              "id": snap.id
-            })
-            count++
-          }
-        })
-      })
+      this.fetchSnapshots("about")
+      this.fetchSnapshots("speakers")
     },
     props: {
       source: String
     },
     methods: {
-      aboutSnapshotClick (id) {
-        this.$router.push({ path: "/about/" + id, params: { "loadedId": id } })
+      snapshotClick (collectionName, id) {
+        this.$router.push({ path: "/" + collectionName + "/" + id, params: { "loadedId": id } })
       },
-      aboutChipSelected (snapshot) {
+      snapshotChipSelected (snapshot) {
         return (this.$route.params.loadedId == null && snapshot.count === 0) || this.$route.params.loadedId === snapshot.id
+      },
+      saveSnapshots (collectionName, collection) {
+        switch (collectionName) {
+        case "about":
+          this.aboutSnapshots = collection
+          break
+        case "speakers":
+          this.speakerSnapshots = collection
+        }
+      },
+      fetchSnapshots (collectionName) {
+        firebase.firestore().collection(collectionName).orderBy("created", "desc").limit(5).onSnapshot((fetched) => {
+          let collection = []
+          let count = 0
+
+          fetched.forEach((snap) => {
+            if (snap.data().created !== null) {
+              collection.push({
+                "author": snap.data().author.displayName.split(" ")[0],
+                "date": getMMDDHHMM(snap.data().created.toDate()),
+                "count": count,
+                "id": snap.id
+              })
+              count++
+            }
+          })
+          this.saveSnapshots(collectionName, collection)
+        })
       },
       logOut () {
         firebase.auth().signOut()
@@ -141,7 +169,7 @@
   }
 </script>
 <style>
-  .about-edits-snapshots {
+  .edits-snapshots {
     margin: 0 10px 6px 60px;
   }
 </style>

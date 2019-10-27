@@ -317,18 +317,13 @@
           }
         }
 
-        this.resetRoute()
+        this.resetRoute("about")
 
         firebase.firestore().collection("about")
           .add(update)
           .then((ref) => {
             this.currentId = ref.id
           })
-      },
-      resetRoute () {
-        this.modified = false
-        this.snapshotIsOld = false
-        this.$router.replace("/about")
       },
       updateState (d) {
         this.headerImage = d.headerImage
@@ -344,12 +339,15 @@
       },
       updateHeaderImage (file) {
         this.updateImage(file, "header/", "headerImage", "isHeaderLoading")
+        this.changed()
       },
       updateVenueImage (file) {
         this.updateImage(file, "venue/", "venueImagePath", "isVenueImageLoading")
+        this.changed()
       },
       updateNewLinkImage (file) {
         this.updateImage(file, "links/", "newLinkImagePath", "isNewLinkImageLoading")
+        this.changed()
       },
       loadSnapshot (snap) {
         if (this.currentId !== null && this.currentId !== snap.id && this.modified) {
