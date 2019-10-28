@@ -16,18 +16,23 @@
               <v-flex :key="speaker.name" class="speaker-group-item" lg3 md6 v-for="(speaker, index) in speakers" xs6>
                 <a :href="speaker.imagePath" target="_blank"><img :src="speaker.imagePath" alt/></a>
                 <span>{{ speaker.name }}</span>
-                <span><a :href="speaker.company" target="_blank">{{ speaker.company }}</a></span>
+                <span>{{ speaker.company }}</span>
+                <v-flex wrap>
+                  <a class="fab fa-twitter"></a>
+                  <a class="fab fa-linkedin"></a>
+                  <a class="fab fa-github"></a>
+                </v-flex>
                 <div class="speaker-group-button-cont">
                   <v-btn @click="editSpeaker(index)" color="secondary" round small>
                     <v-icon small>edit</v-icon>
                     &nbsp;
-                    Edit speaker
+                    Edit
                     &nbsp;
                   </v-btn>
                   <v-btn @click="deleteSpeaker(index)" color="secondary" round small>
                     <v-icon small>delete</v-icon>
                     &nbsp;
-                    Delete speaker
+                    Delete
                     &nbsp;
                   </v-btn>
                 </div>
@@ -259,5 +264,77 @@
 </script>
 
 <style scoped>
+  .speaker-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 240px);
+    grid-row-gap: 20px;
+    justify-content: space-around;
+  }
+
+  .speaker-group-item {
+    max-width: 220px;
+    display: flex;
+    flex-flow: column;
+    flex-basis: available;
+    text-align: start;
+    margin: 10px;
+  }
+
+  .speaker-group-item img {
+    width: 100%;
+    height: auto;
+  }
+
+  .speaker-group-item span {
+    font-size: 14pt;
+    padding: 4px;
+  }
+
+  .speaker-group-button-cont {
+    align-self: center;
+    text-align: center;
+  }
+
+  .upload-image {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+  }
+
+  .upload-image-cont {
+    width: 320px;
+    height: auto;
+    min-height: 50%;
+    min-width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-color: #CCC;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 4px;
+  }
+
+  .upload-image-text-cont {
+    width: auto;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+  }
+
+  .upload-image div:hover {
+    border-color: #FFF;
+  }
+
+  .upload-image img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .fab {
+    margin: 20px;
+  }
 
 </style>
