@@ -63,6 +63,15 @@ export const commonMixin = {
 
       this.isLoading = false
     },
+    loadSnapshot (snap) {
+      if (this.currentId !== null && this.currentId !== snap.id && this.modified) {
+        this.currentIdUpdated = true
+        this.modified = false
+        // TODO: If modified, alert user, offer to switch them
+      }
+      this.currentId = snap.id
+      this.updateState(snap.data())
+    },
     resetRoute (loc) {
       this.modified = false
       this.snapshotIsOld = false

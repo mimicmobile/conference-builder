@@ -17,10 +17,10 @@
                 <a :href="speaker.imagePath" target="_blank"><img :src="speaker.imagePath" alt/></a>
                 <span>{{ speaker.name }}</span>
                 <span>{{ speaker.company }}</span>
-                <v-flex wrap>
-                  <a class="fab fa-twitter"></a>
-                  <a class="fab fa-linkedin"></a>
-                  <a class="fab fa-github"></a>
+                <v-flex class="speaker-links-cont">
+                  <a v-if="speaker.twitter" :href="speaker.twitter" class="fab fa-twitter"></a>
+                  <a v-if="speaker.linkedIn" :href="speaker.linkedIn" class="fab fa-linkedin"></a>
+                  <a v-if="speaker.github" :href="speaker.github" class="fab fa-github"></a>
                 </v-flex>
                 <div class="speaker-group-button-cont">
                   <v-btn @click="editSpeaker(index)" color="secondary" round small>
@@ -187,7 +187,7 @@
           bio: this.newSpeakerBio,
           imagePath: this.newSpeakerImagePath,
           company: this.newSpeakerCompany,
-          twitter: this.newSpeakerBio,
+          twitter: this.newSpeakerTwitter,
           linkedIn: this.newSpeakerLinkedIn,
           github: this.newSpeakerGithub
         }
@@ -241,15 +241,6 @@
       updateNewSpeakerImage (file) {
         this.updateImage(file, "speakers/", "newSpeakerImagePath", "isNewSpeakerImageLoading")
       },
-      loadSnapshot (snap) {
-        if (this.currentId !== null && this.currentId !== snap.id && this.modified) {
-          this.currentIdUpdated = true
-          this.modified = false
-          // TODO: If modified, alert user, offer to switch them
-        }
-        this.currentId = snap.id
-        this.updateState(snap.data())
-      }
     },
     mounted () {
       firebase.firestore().collection("speakers")
@@ -334,7 +325,8 @@
   }
 
   .fab {
-    margin: 20px;
+    margin-right: 20px;
+    text-decoration: none;
   }
 
 </style>
