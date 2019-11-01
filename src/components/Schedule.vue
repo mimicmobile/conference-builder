@@ -9,40 +9,42 @@
   </v-container>
   <v-container grid-list-md text-xs-center v-else>
     <form v-on:change="changed">
-      <v-layout wrap>
-        <v-flex class="py-3" xs12>
+      <v-row>
+        <v-col cols="12">
           <v-card flat>
-            <v-flex class="schedule-group" v-if="talks.length > 0" wrap xs12>
-              <v-flex :key="talk.name" class="schedule-group-item" lg3 md6 v-for="(talk, index) in schedule"
-                      xs6>
-              </v-flex>
-            </v-flex>
-            <v-flex wrap xs12>
+            <v-col cols="12" class="schedule-group" v-if="talks.length > 0">
+              <v-col xs="6" md="6" lg="3" :key="talk.name" class="schedule-group-item" v-for="(talk, index) in schedule">
+              </v-col>
+            </v-col>
+            <v-col cols="12" wrap>
               <v-btn @click="showNewTalkDialog" color="accent" round>
                 <v-icon small>add</v-icon>
                 Add new talk
               </v-btn>
-            </v-flex>
+            </v-col>
           </v-card>
-        </v-flex>
+        </v-col>
         <v-dialog max-width="800px" v-model="newTalkDialog">
           <v-card>
             <v-card-title>
               <span class="headline">Add a new talk</span>
             </v-card-title>
             <v-card-text>
-              <v-container grid-list-md>
-                <v-layout wrap>
+              <v-container>
+                <v-row>
+                  <!-- Date/time picker -->
+                  <v-datetime-picker label="Select Date and time" v-model="newTalkDateTime"></v-datetime-picker>
+                  <v-select items="speakers" label="Select speaker(s)" multiple></v-select>
                   <!-- Speaker (select) -->
-                  <v-flex lg6 xs12>
+                  <v-col lg="6" xs="12">
                     <v-text-field label="Title" required v-model="newTalkTitle"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12>
+                  </v-col>
+                  <v-col xs="12">
                     <v-textarea label="Description" required v-model="newTalkDescription"></v-textarea>
-                  </v-flex>
+                  </v-col>
                   <!-- Type (select) -->
                   <!-- Track (combobox) -->
-                </v-layout>
+                </v-row>
               </v-container>
             </v-card-text>
             <v-card-actions>
@@ -71,7 +73,7 @@
             <v-icon>save</v-icon>
           </v-btn>
         </v-snackbar>
-      </v-layout>
+      </v-row>
     </form>
   </v-container>
 </template>
@@ -93,13 +95,15 @@
     },
     data: () => ({
       newTalkIndex: null,
+      newTalkDateTime: null,
       newTalkTitle: null,
       newTalkDescription: null,
       newTalkTrackId: null,
       newTalkTypeId: null,
       newTalkSpeakerId: null,
       newTalkDialog: false,
-      talks: []
+      talks: [],
+      speakers: []
     }),
     computed: {
       validNewTalk () {
@@ -174,8 +178,19 @@
         // schedule["time"] = []
         // List:
         //    - Get keys
-        //    - Splkit
+        //    - Split
         this.talks = d.talks || []
+      },
+      loadSpeakers (s) {
+        s.forEach((snap) => {
+          this.speakers = []
+          snap.forEach((speaker) => {
+            this.speakers.push({
+              "name": speaker.name,
+              "id": speaker.id
+            })
+          })
+        })
       }
     },
     mounted () {
@@ -183,6 +198,11 @@
         .orderBy("created", "desc")
         .limit(6)
         .onSnapshot((schedule) => this.loadCollection(schedule))
+
+      firebase.firestore().collection("speakers")
+        .orderBy("created", "desc")
+        .limit(1)
+        .onSnapshot((speakers) => this.loadSpeakers(speakers))
     }
   }
 </script>

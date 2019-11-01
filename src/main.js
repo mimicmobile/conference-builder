@@ -1,5 +1,4 @@
 import Vue from "vue"
-import "./plugins/vuetify"
 import App from "./App.vue"
 
 import VueRouter from "vue-router"
@@ -10,14 +9,20 @@ import firebase from "firebase/app"
 import router from "./router"
 import { config } from "./firebaseConfig"
 
+import vuetify from "./plugins/vuetify"
+
+import DatetimePicker from "vuetify-datetime-picker"
+
 import store from "./store"
 
 Vue.config.productionTip = false
 
 Vue.use(VueRouter)
+Vue.use(DatetimePicker)
 
 new Vue({
   router,
+  vuetify,
   store: store,
   created () {
     firebase.initializeApp(config)

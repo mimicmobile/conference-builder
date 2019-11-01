@@ -1,69 +1,69 @@
 <template>
   <v-container class="pt-5" v-if="isLoading">
-    <v-layout justify-center>
+    <v-row justify-center>
       <v-progress-circular
         :indeterminate="true"
         color="accent"
       ></v-progress-circular>
-    </v-layout>
+    </v-row>
   </v-container>
-  <v-container grid-list-md text-xs-center v-else>
+  <v-container v-else>
     <form v-on:change="changed">
-      <v-layout wrap>
-        <v-flex class="py-3" xs12>
-          <v-card flat>
-            <v-flex class="speaker-group" v-if="speakers.length > 0" wrap xs12>
-              <v-flex :key="speaker.name" class="speaker-group-item" lg3 md6 v-for="(speaker, index) in speakers" xs6>
+      <v-row wrap>
+        <v-col cols="12">
+          <v-card text>
+            <v-col cols="12" class="speaker-group" v-if="speakers.length > 0" wrap>
+              <v-col xs="6" md="6" lg="3" :key="speaker.name" class="speaker-group-item" v-for="(speaker, index) in speakers">
                 <a :href="speaker.imagePath" target="_blank"><img :src="speaker.imagePath" alt/></a>
                 <span>{{ speaker.name }}</span>
                 <span>{{ speaker.company }}</span>
-                <v-flex class="speaker-links-cont">
+                <v-col class="speaker-links-cont">
                   <a v-if="speaker.twitter" :href="speaker.twitter" class="fab fa-twitter"></a>
                   <a v-if="speaker.linkedIn" :href="speaker.linkedIn" class="fab fa-linkedin"></a>
                   <a v-if="speaker.github" :href="speaker.github" class="fab fa-github"></a>
-                </v-flex>
-                <div class="speaker-group-button-cont">
-                  <v-btn @click="editSpeaker(index)" color="secondary" round small>
+                </v-col>
+                <v-row class="speaker-group-button-cont" wrap>
+                  <v-btn @click="editSpeaker(index)" color="secondary" rounded small>
                     <v-icon small>edit</v-icon>
                     &nbsp;
                     Edit
                     &nbsp;
                   </v-btn>
-                  <v-btn @click="deleteSpeaker(index)" color="secondary" round small>
+                  <v-btn @click="deleteSpeaker(index)" color="secondary" rounded small>
                     <v-icon small>delete</v-icon>
                     &nbsp;
                     Delete
                     &nbsp;
                   </v-btn>
-                </div>
-              </v-flex>
-            </v-flex>
-            <v-flex wrap xs12>
-              <v-btn @click="showNewSpeakerDialog" color="accent" round>
+                </v-row>
+              </v-col>
+            </v-col>
+            <v-col class="text-center" cols="12" wrap>
+              <v-btn @click="showNewSpeakerDialog" color="accent" rounded>
                 <v-icon small>add</v-icon>
                 Add new speaker
               </v-btn>
-            </v-flex>
+            </v-col>
           </v-card>
-        </v-flex>
+        </v-col>
         <v-dialog max-width="800px" v-model="newSpeakerDialog">
           <v-card>
             <v-card-title>
               <span class="headline">Add a new speaker</span>
             </v-card-title>
             <v-card-text>
-              <v-container grid-list-md>
-                <v-layout wrap>
-                  <v-flex lg6 xs12>
+              <v-container>
+                <v-row wrap>
+                  <v-col cols="12" lg="6">
                     <v-text-field label="Name" required v-model="newSpeakerName"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12>
+                  </v-col>
+                  <v-col cols="12" lg="6">
+                    <v-text-field label="Company" required v-model="newSpeakerCompany"></v-text-field>
+                  </v-col>
+                  <v-col cols="12">
                     <v-textarea label="Bio" required v-model="newSpeakerBio"></v-textarea>
-                  </v-flex>
-                  <v-flex lg6 xs12>
-                    <v-textarea label="Company" required v-model="newSpeakerCompany"></v-textarea>
-                  </v-flex>
-                  <v-flex class="pb-3 upload-image" lg12 xs12>
+                  </v-col>
+                  <v-col cols="12" class="upload-image">
                     <div class="upload-image-cont">
                       <img :src="newSpeakerImageOrPlaceholder" alt/>
                       <div class="upload-image-text-cont">
@@ -71,34 +71,32 @@
                                              v-if="isNewSpeakerImageLoading"></v-progress-circular>
                       </div>
                     </div>
-                    <upload-btn @file-update="updateNewSpeakerImage" class="upload-image-btn" color="accent"
-                                noTitleUpdate
-                                round title="Set image">
-                      <template slot="icon-left">
-                        <v-icon small>add</v-icon>
-                      </template>
-                    </upload-btn>
-                  </v-flex>
-                  <v-flex class="pb-3" md6 xs12>
+                    <v-btn class="ml-3 mt-3" color="accent" rounded @click="clickUpload('imageUpload')">
+                      <v-icon small>add</v-icon>
+                      Set speaker image
+                    </v-btn>
+                    <v-file-input class="hide" id="imageUpload" @change="updateNewSpeakerImage"></v-file-input>
+                  </v-col>
+                  <v-col cols="12" md="6">
                     <v-text-field append-icon="fab fa-twitter" label="Twitter"
                                   v-model="newSpeakerTwitter"></v-text-field>
-                  </v-flex>
-                  <v-flex class="pb-3" md6 xs12>
+                  </v-col>
+                  <v-col cols="12" md="6">
                     <v-text-field append-icon="fab fa-linkedin" label="LinkedIn"
                                   v-model="newSpeakerLinkedIn"></v-text-field>
-                  </v-flex>
-                  <v-flex class="pb-3" md6 xs12>
+                  </v-col>
+                  <v-col cols="12" md="6">
                     <v-text-field append-icon="fab fa-github" label="Github"
                                   v-model="newSpeakerGithub"></v-text-field>
-                  </v-flex>
-                </v-layout>
+                  </v-col>
+                </v-row>
               </v-container>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn @click="newSpeakerDialog = false" color="secondary darken-1" flat>Close</v-btn>
-              <v-btn :disabled="!validNewSpeaker" @click="addNewSpeaker" color="secondary darken-1" flat>{{
-                addOrSaveSpeaker }}
+              <v-btn @click="newSpeakerDialog = false" color="secondary darken-1" text>Close</v-btn>
+              <v-btn :disabled="!validNewSpeaker" @click="addNewSpeaker" color="secondary darken-1" text>
+                {{ addOrSaveSpeaker }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -120,7 +118,7 @@
             <v-icon>save</v-icon>
           </v-btn>
         </v-snackbar>
-      </v-layout>
+      </v-row>
     </form>
   </v-container>
 </template>
@@ -129,8 +127,6 @@
   import firebase from "firebase/app"
   import "firebase/storage"
   import "firebase/firestore"
-
-  import UploadButton from "vuetify-upload-button"
 
   import { commonMixin } from "../mixins"
 
@@ -189,7 +185,8 @@
           company: this.newSpeakerCompany,
           twitter: this.newSpeakerTwitter,
           linkedIn: this.newSpeakerLinkedIn,
-          github: this.newSpeakerGithub
+          github: this.newSpeakerGithub,
+          id: this.createSlug(this.newSpeakerName)
         }
 
         if (this.newSpeakerIndex != null) {
@@ -240,16 +237,13 @@
       },
       updateNewSpeakerImage (file) {
         this.updateImage(file, "speakers/", "newSpeakerImagePath", "isNewSpeakerImageLoading")
-      },
+      }
     },
     mounted () {
       firebase.firestore().collection("speakers")
         .orderBy("created", "desc")
         .limit(6)
         .onSnapshot((speakerCollection) => this.loadCollection(speakerCollection))
-    },
-    components: {
-      "upload-btn": UploadButton
     }
   }
 </script>
@@ -263,7 +257,7 @@
   }
 
   .speaker-group-item {
-    max-width: 220px;
+    max-width: 320px;
     display: flex;
     flex-flow: column;
     flex-basis: available;
@@ -282,18 +276,18 @@
   }
 
   .speaker-group-button-cont {
-    align-self: center;
-    text-align: center;
+    justify-content: space-evenly;
   }
 
   .upload-image {
     display: flex;
     flex-flow: row;
     align-items: center;
+    flex-wrap: wrap;
   }
 
   .upload-image-cont {
-    width: 320px;
+    width: 260px;
     height: auto;
     min-height: 50%;
     min-width: 50%;

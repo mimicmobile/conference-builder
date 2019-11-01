@@ -28,6 +28,12 @@ export const commonMixin = {
     changed () {
       this.modified = true
     },
+    createSlug (name) {
+      let slug = name.toLowerCase()
+      slug = slug.replace(/\s*$/g, "")
+      slug = slug.replace(/\s+/g, "-")
+      return slug
+    },
     updateImage (file, path, urlVar, loadingVar) {
       this[loadingVar] = true
 
@@ -76,6 +82,9 @@ export const commonMixin = {
       this.modified = false
       this.snapshotIsOld = false
       this.$router.replace("/" + loc)
+    },
+    clickUpload (elId) {
+      document.getElementById(elId).click()
     }
   }
 }

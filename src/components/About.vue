@@ -1,104 +1,102 @@
 <template>
   <v-container class="pt-5" v-if="isLoading">
-    <v-layout justify-center>
+    <v-row justify-center>
       <v-progress-circular
         color="accent"
         indeterminate
       ></v-progress-circular>
-    </v-layout>
+    </v-row>
   </v-container>
   <v-container grid-list-md text-xs-center v-else>
     <form v-on:change="changed">
-      <v-layout wrap>
-        <v-flex class="py-3" xs12>
+      <v-row wrap>
+        <v-col class="text-center">
           <div class="header-image-cont">
             <img :src="headerImageOrPlaceholder" alt class="header-image"/>
             <div class="header-text-cont">
               <v-progress-circular color="accent" indeterminate v-if="isHeaderLoading"></v-progress-circular>
             </div>
           </div>
-          <upload-btn @file-update="updateHeaderImage" color="accent" noTitleUpdate round
-                      title="Set header image">
-            <template slot="icon-left">
-              <v-icon small>add</v-icon>
-            </template>
-          </upload-btn>
-        </v-flex>
+          <v-btn color="accent" rounded @click="clickUpload('headerImageUpload')">
+            <v-icon small>add</v-icon>
+            Set header image
+          </v-btn>
+          <v-file-input class="hide" id="headerImageUpload" @change="updateHeaderImage"></v-file-input>
+        </v-col>
 
-        <v-flex class="pb-3" xs12>
-          <v-textarea auto-grow label="Conference description" outline v-model="description"></v-textarea>
-        </v-flex>
-        <v-flex class="pb-3" md6 xs12>
-          <v-text-field append-icon="fab fa-twitter" label="Twitter" outline v-model="twitter"></v-text-field>
-        </v-flex>
-        <v-flex class="pb-3" md6 xs12>
-          <v-text-field append-icon="web" label="Website" outline v-model="website"></v-text-field>
-        </v-flex>
-        <v-flex class="pb-3" md6 xs12>
-          <v-text-field append-icon="email" label="Email" outline v-model="contactEmail"></v-text-field>
-        </v-flex>
+        <v-col cols="12">
+          <v-textarea auto-grow label="Conference description" outlined v-model="description"></v-textarea>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-text-field append-icon="fab fa-twitter" label="Twitter" outlined v-model="twitter"></v-text-field>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-text-field append-icon="web" label="Website" outlined v-model="website"></v-text-field>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-text-field append-icon="email" label="Email" outlined v-model="contactEmail"></v-text-field>
+        </v-col>
 
-        <v-flex class="py-3" text-xs-left xs12>
+        <v-col cols="12">
           <span class="title font-weight-light">Venue</span>
-        </v-flex>
+        </v-col>
 
-        <v-flex class="pb-3" md6 xs12>
-          <v-text-field append-icon="business" label="Name" outline v-model="venueName"></v-text-field>
-        </v-flex>
-        <v-flex class="pb-3" md6 xs12>
-          <v-text-field append-icon="map" label="Address" outline v-model="venueAddress"></v-text-field>
-        </v-flex>
-        <v-flex class="pb-3 upload-image" md8 xs12>
+        <v-col cols="12" md="6">
+          <v-text-field append-icon="business" label="Name" outlined v-model="venueName"></v-text-field>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-text-field append-icon="map" label="Address" outlined v-model="venueAddress"></v-text-field>
+        </v-col>
+        <v-col class="upload-image" md="8" cols="12">
           <div class="upload-image-cont">
             <img :src="venueImageOrPlaceholder" alt/>
             <div class="upload-image-text-cont">
               <v-progress-circular color="accent" indeterminate v-if="isVenueImageLoading"></v-progress-circular>
             </div>
           </div>
-          <upload-btn @file-update="updateVenueImage" class="upload-image-btn" color="accent" noTitleUpdate
-                      round title="Set venue image">
-            <template slot="icon-left">
-              <v-icon small>add</v-icon>
-            </template>
-          </upload-btn>
-        </v-flex>
+          <v-btn class="ml-3" color="accent" rounded @click="clickUpload('venueImageUpload')">
+            <v-icon small>add</v-icon>
+            Set venue image
+          </v-btn>
+          <v-file-input class="hide" id="venueImageUpload" @change="updateVenueImage"></v-file-input>
+        </v-col>
 
-        <v-flex class="py-3" text-xs-left xs12>
+        <v-col cols="12">
           <span class="title font-weight-light">Links</span>
-        </v-flex>
+        </v-col>
 
-        <v-flex class="py-3" xs12>
+        <v-col cols="12">
           <v-card flat>
-            <v-flex class="link-group" v-if="links.length > 0" wrap xs12>
-              <v-flex :key="link.name" class="link-group-item" lg3 md6 v-for="(link, index) in links" xs6>
+            <v-col class="link-group" v-if="links.length > 0" wrap cols="12">
+              <v-col :key="link.name" class="link-group-item" md="6" lg="3" xs="6" v-for="(link, index) in links">
                 <a :href="link.imagePath" target="_blank"><img :src="link.imagePath" alt/></a>
                 <span>{{ link.name }}</span>
                 <span><a :href="link.website" target="_blank">{{ link.website }}</a></span>
                 <span>{{ linkTypeNameFromId(link.typeId) }}</span>
-                <div class="link-group-button-cont">
-                  <v-btn @click="editLink(index)" color="secondary" round small>
+                <v-row class="link-group-button-cont mt-2" wrap>
+                  <v-btn @click="editLink(index)" color="secondary" rounded small>
                     <v-icon small>edit</v-icon>
                     &nbsp;
-                    Edit link
+                    Edit
                     &nbsp;
                   </v-btn>
-                  <v-btn @click="deleteLink(index)" color="secondary" round small>
+                  <v-btn @click="deleteLink(index)" color="secondary" rounded small>
                     <v-icon small>delete</v-icon>
                     &nbsp;
-                    Delete link
+                    Delete
                     &nbsp;
                   </v-btn>
-                </div>
-              </v-flex>
-            </v-flex>
-            <v-flex wrap xs12>
-              <v-btn @click="showNewLinkDialog" color="accent" round>
+                </v-row>
+              </v-col>
+            </v-col>
+            <v-col wrap cols="12" class="text-center">
+              <v-btn @click="showNewLinkDialog" color="accent" rounded>
                 <v-icon small>add</v-icon>
                 Add new link
               </v-btn>
-            </v-flex>
+            </v-col>
           </v-card>
-        </v-flex>
+        </v-col>
 
         <v-dialog max-width="600px" v-model="newLinkDialog">
           <v-card>
@@ -106,19 +104,19 @@
               <span class="headline">Add a new link</span>
             </v-card-title>
             <v-card-text>
-              <v-container grid-list-md>
-                <v-layout wrap>
-                  <v-flex lg6 xs12>
+              <v-container>
+                <v-row wrap>
+                  <v-col lg="6" xs="12">
                     <v-text-field label="Name" required v-model="newLinkName"></v-text-field>
-                  </v-flex>
-                  <v-flex lg6 xs12>
+                  </v-col>
+                  <v-col lg="6" xs="12">
                     <v-text-field label="Website" required v-model="newLinkWebsite"></v-text-field>
-                  </v-flex>
-                  <v-flex lg6 xs12>
-                    <v-combobox :items="linkTypes" item-text="name" item-value="id" label="Type" outline small
+                  </v-col>
+                  <v-col lg="6" xs="12">
+                    <v-combobox :items="linkTypes" item-text="name" item-value="id" label="Type" outlined small
                                 v-model="newLinkTypeId"></v-combobox>
-                  </v-flex>
-                  <v-flex class="pb-3 upload-image" lg12 xs12>
+                  </v-col>
+                  <v-col cols="12" class="upload-image text-center">
                     <div class="upload-image-cont">
                       <img :src="newLinkImageOrPlaceholder" alt/>
                       <div class="upload-image-text-cont">
@@ -126,20 +124,19 @@
                                              v-if="isNewLinkImageLoading"></v-progress-circular>
                       </div>
                     </div>
-                    <upload-btn @file-update="updateNewLinkImage" class="upload-image-btn" color="accent" noTitleUpdate
-                                round title="Set image">
-                      <template slot="icon-left">
-                        <v-icon small>add</v-icon>
-                      </template>
-                    </upload-btn>
-                  </v-flex>
-                </v-layout>
+                    <v-btn class="ml-2" color="accent" rounded @click="clickUpload('linkImageUpload')">
+                      <v-icon small>add</v-icon>
+                      Set link image
+                    </v-btn>
+                    <v-file-input class="hide" id="linkImageUpload" @change="updateNewLinkImage"></v-file-input>
+                  </v-col>
+                </v-row>
               </v-container>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn @click="newLinkDialog = false" color="secondary darken-1" flat>Close</v-btn>
-              <v-btn :disabled="!validNewLink" @click="addNewLink" color="secondary darken-1" flat>{{ addOrSaveLink }}
+              <v-btn @click="newLinkDialog = false" color="secondary darken-1" text>Close</v-btn>
+              <v-btn :disabled="!validNewLink" @click="addNewLink" color="secondary darken-1" text>{{ addOrSaveLink }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -162,7 +159,7 @@
             <v-icon>save</v-icon>
           </v-btn>
         </v-snackbar>
-      </v-layout>
+      </v-row>
     </form>
   </v-container>
 </template>
@@ -171,8 +168,6 @@
   import firebase from "firebase/app"
   import "firebase/storage"
   import "firebase/firestore"
-
-  import UploadButton from "vuetify-upload-button"
 
   import { commonMixin } from "../mixins"
 
@@ -355,9 +350,6 @@
         .orderBy("created", "desc")
         .limit(6)
         .onSnapshot((aboutCollection) => this.loadCollection(aboutCollection))
-    },
-    components: {
-      "upload-btn": UploadButton
     }
   }
 </script>
@@ -435,7 +427,7 @@
 
   .link-group {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 300px);
+    grid-template-columns: repeat(auto-fill, 260px);
     grid-row-gap: 20px;
     justify-content: space-around;
   }
@@ -460,7 +452,7 @@
   }
 
   .link-group-button-cont {
-    align-self: center
+    justify-content: space-evenly;
   }
 
   @media screen and (max-width: 800px) {

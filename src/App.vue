@@ -1,71 +1,71 @@
 <template>
-  <v-app dark id="inspire">
+  <v-app id="inspire">
     <v-navigation-drawer
-      app
-      clipped
       fixed
+      clipped
+      app
       v-model="drawer"
     >
       <v-list dense>
-        <v-list-tile to="/speakers">
-          <v-list-tile-action>
+        <v-list-item to="/speakers">
+          <v-list-item-action>
             <v-icon>person</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Speakers</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Speakers</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <div v-if="isSpeakers">
           <v-chip :key="snapshot.count"
-                  :selected="snapshotChipSelected(snapshot)"
+                  :input-value="snapshotChipSelected(snapshot)"
                   @click="snapshotClick('speakers', snapshot.id)"
                   class="edits-snapshots"
-                  outline
+                  outlined
                   small v-for="snapshot in speakerSnapshots">
             {{ snapshot.date }} by {{ snapshot.author }}
           </v-chip>
         </div>
-        <v-list-tile to="/schedule">
-          <v-list-tile-action>
+        <v-list-item to="/schedule">
+          <v-list-item-action>
             <v-icon>schedule</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Schedule</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile to="/about">
-          <v-list-tile-action>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Schedule</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/about">
+          <v-list-item-action>
             <v-icon>help_outline</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>About</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>About</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <div v-if="isAbout">
           <v-chip :key="snapshot.count"
-                  :selected="snapshotChipSelected(snapshot)"
+                  :input-value="snapshotChipSelected(snapshot)"
                   @click="snapshotClick('about', snapshot.id)"
                   class="edits-snapshots"
-                  outline
+                  outlined
                   small v-for="snapshot in aboutSnapshots">
             {{ snapshot.date }} by {{ snapshot.author }}
           </v-chip>
         </div>
         <v-divider></v-divider>
-        <v-list-tile @click="logOut" v-if="currentUser">
-          <v-list-tile-action>
+        <v-list-item @click="logOut" v-if="currentUser">
+          <v-list-item-action>
             <v-icon>logout</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Logout ({{ currentUser.displayName }})</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Logout ({{ currentUser.displayName }})</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar app clipped-left color="primary" fixed>
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+    <v-app-bar app clipped-left color="primary" fixed>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
-    </v-toolbar>
+    </v-app-bar>
     <v-content>
       <v-container class="pt-5" v-if="isLoading">
         <v-layout justify-center>
@@ -171,5 +171,9 @@
 <style>
   .edits-snapshots {
     margin: 0 10px 6px 60px;
+  }
+
+  .hide {
+    display: none !important;
   }
 </style>
