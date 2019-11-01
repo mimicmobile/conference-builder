@@ -13,7 +13,8 @@
         <v-col cols="12">
           <v-card text>
             <v-col cols="12" class="speaker-group" v-if="speakers.length > 0" wrap>
-              <v-col xs="6" md="6" lg="3" :key="speaker.name" class="speaker-group-item" v-for="(speaker, index) in speakers">
+              <v-col xs="6" md="6" lg="3" :key="speaker.name" class="speaker-group-item"
+                     v-for="(speaker, index) in speakers">
                 <a :href="speaker.imagePath" target="_blank"><img :src="speaker.imagePath" alt/></a>
                 <span>{{ speaker.name }}</span>
                 <span>{{ speaker.company }}</span>
@@ -144,6 +145,7 @@
     },
     data: () => ({
       isNewSpeakerImageLoading: false,
+      speakerDeleted: false,
       newSpeakerIndex: null,
       newSpeakerName: null,
       newSpeakerBio: null,
@@ -153,6 +155,7 @@
       newSpeakerLinkedIn: null,
       newSpeakerGithub: null,
       newSpeakerDialog: false,
+      newSpeakerId: null,
       speakers: []
     }),
     computed: {
@@ -175,6 +178,7 @@
         this.newSpeakerTwitter = null
         this.newSpeakerLinkedIn = null
         this.newSpeakerGithub = null
+        this.newSpeakerId = null
         this.newSpeakerDialog = true
       },
       addNewSpeaker () {
@@ -186,12 +190,13 @@
           twitter: this.newSpeakerTwitter,
           linkedIn: this.newSpeakerLinkedIn,
           github: this.newSpeakerGithub,
-          id: this.createSlug(this.newSpeakerName)
+          id: this.newSpeakerId
         }
 
         if (this.newSpeakerIndex != null) {
           this.speakers[this.newSpeakerIndex] = update
         } else {
+          update["id"] = this.createId()
           this.speakers.push(update)
         }
 
@@ -202,6 +207,7 @@
         const speaker = this.speakers[index]
 
         this.newSpeakerIndex = index
+        this.newSpeakerId = speaker.id
         this.newSpeakerName = speaker.name
         this.newSpeakerBio = speaker.bio
         this.newSpeakerCompany = speaker.company
@@ -212,6 +218,7 @@
       },
       deleteSpeaker (index) {
         this.speakers.splice(index, 1)
+        this.speakerDeleted = true
         this.changed()
       },
       save () {
@@ -230,6 +237,30 @@
           .add(update)
           .then((ref) => {
             this.currentId = ref.id
+            if (!this.speakerDeleted && !this.snapshotIsOld) {
+              // Update schedule speaker snapshot ref
+              firebase.firestore().collection("schedule")
+                .orderBy("created", "desc")
+                .limit(1)
+                .get().then((e) => {
+                  let schedule = e.docs[0].data()
+                  schedule["speakerRef"] = this.currentId
+                  schedule["created"] = firebase.firestore.FieldValue.serverTimestamp()
+                  schedule["author"] = {
+                    displayName: firebase.auth().currentUser.displayName,
+                    uid: firebase.auth().currentUser.uid
+                  }
+
+                  firebase.firestore().collection("schedule").add(schedule).then(() => {
+                    console.log("Updated schedule with new snapshot")
+                  })
+                })
+            } else {
+              // TODO alert user to update schedule
+              console.log("Schedule still using old speaker snapshot reference")
+            }
+
+            this.speakerDeleted = false
           })
       },
       updateState (d) {

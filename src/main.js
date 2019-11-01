@@ -11,14 +11,11 @@ import { config } from "./firebaseConfig"
 
 import vuetify from "./plugins/vuetify"
 
-import DatetimePicker from "vuetify-datetime-picker"
-
 import store from "./store"
 
 Vue.config.productionTip = false
 
 Vue.use(VueRouter)
-Vue.use(DatetimePicker)
 
 new Vue({
   router,

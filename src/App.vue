@@ -1,9 +1,9 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer
-      fixed
-      clipped
       app
+      clipped
+      fixed
       v-model="drawer"
     >
       <v-list dense>
@@ -16,8 +16,8 @@
           </v-list-item-content>
         </v-list-item>
         <div v-if="isSpeakers">
-          <v-chip :key="snapshot.count"
-                  :input-value="snapshotChipSelected(snapshot)"
+          <v-chip :input-value="snapshotChipSelected(snapshot)"
+                  :key="snapshot.count"
                   @click="snapshotClick('speakers', snapshot.id)"
                   class="edits-snapshots"
                   outlined
@@ -33,6 +33,16 @@
             <v-list-item-title>Schedule</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <div v-if="isSchedule">
+          <v-chip :input-value="snapshotChipSelected(snapshot)"
+                  :key="snapshot.count"
+                  @click="snapshotClick('schedule', snapshot.id)"
+                  class="edits-snapshots"
+                  outlined
+                  small v-for="snapshot in scheduleSnapshots">
+            {{ snapshot.date }} by {{ snapshot.author }}
+          </v-chip>
+        </div>
         <v-list-item to="/about">
           <v-list-item-action>
             <v-icon>help_outline</v-icon>
@@ -42,8 +52,8 @@
           </v-list-item-content>
         </v-list-item>
         <div v-if="isAbout">
-          <v-chip :key="snapshot.count"
-                  :input-value="snapshotChipSelected(snapshot)"
+          <v-chip :input-value="snapshotChipSelected(snapshot)"
+                  :key="snapshot.count"
                   @click="snapshotClick('about', snapshot.id)"
                   class="edits-snapshots"
                   outlined
@@ -104,7 +114,8 @@
     data: () => ({
       drawer: null,
       aboutSnapshots: [],
-      speakerSnapshots: []
+      speakerSnapshots: [],
+      scheduleSnapshots: []
     }),
     computed: {
       currentUser () {
@@ -118,11 +129,15 @@
       },
       isSpeakers () {
         return this.$route.name === "Speakers"
+      },
+      isSchedule () {
+        return this.$route.name === "Schedule"
       }
     },
     mounted () {
       this.fetchSnapshots("about")
       this.fetchSnapshots("speakers")
+      this.fetchSnapshots("schedule")
     },
     props: {
       source: String
@@ -141,6 +156,9 @@
           break
         case "speakers":
           this.speakerSnapshots = collection
+          break
+        case "schedule":
+          this.scheduleSnapshots = collection
         }
       },
       fetchSnapshots (collectionName) {

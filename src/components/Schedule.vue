@@ -7,17 +7,41 @@
       ></v-progress-circular>
     </v-layout>
   </v-container>
-  <v-container grid-list-md text-xs-center v-else>
+  <v-container text-xs-center v-else>
     <form v-on:change="changed">
       <v-row>
         <v-col cols="12">
-          <v-card flat>
-            <v-col cols="12" class="schedule-group" v-if="talks.length > 0">
-              <v-col xs="6" md="6" lg="3" :key="talk.name" class="schedule-group-item" v-for="(talk, index) in schedule">
+          <v-card text>
+            <v-row :key="talkKey" class="pa-5 schedule-group-item" v-for="talkKey in sortedTalks()">
+              <v-col cols="12">{{ talkKey }}</v-col>
+              <v-col :key="talk.track" lg="6" md="6" v-for="talk in talks[talkKey]" xs="6">
+                <v-card @click="editTalk(talk.datetime, talk.trackId)" class="speaker-card">
+                  <v-card-title class="talk-title">
+                    {{ talk.title }}
+                  </v-card-title>
+                  <v-row class="ma-3 pb-3" no-gutters v-if="talk.speakerIds.length > 0">
+                    <v-col class="speaker-avatars text-center">
+                      <v-avatar :key="speakerId" size="70px" v-for="speakerId in talk.speakerIds">
+                        <img :alt="findSpeaker(speakerId).text" :src="findSpeaker(speakerId).imagePath"/>
+                      </v-avatar>
+                    </v-col>
+                    <v-col class="px-3" cols="8">
+                      <v-col class="speaker-names-title pa-1" cols="12">
+                        {{ speakerNames(talk.speakerIds) }}
+                      </v-col>
+                      <v-col class="speaker-companies-title pa-1" cols="12">
+                        {{ speakerCompanies(talk.speakerIds) }}
+                      </v-col>
+                      <v-col class="track-title pa-1" cols="12">
+                        {{ talkTrackName(talk.trackId) }}
+                      </v-col>
+                    </v-col>
+                  </v-row>
+                </v-card>
               </v-col>
-            </v-col>
-            <v-col cols="12" wrap>
-              <v-btn @click="showNewTalkDialog" color="accent" round>
+            </v-row>
+            <v-col class="text-center" cols="12" wrap>
+              <v-btn @click="showNewTalkDialog" color="accent" rounded>
                 <v-icon small>add</v-icon>
                 Add new talk
               </v-btn>
@@ -31,26 +55,56 @@
             </v-card-title>
             <v-card-text>
               <v-container>
-                <v-row>
-                  <!-- Date/time picker -->
-                  <v-datetime-picker label="Select Date and time" v-model="newTalkDateTime"></v-datetime-picker>
-                  <v-select items="speakers" label="Select speaker(s)" multiple></v-select>
-                  <!-- Speaker (select) -->
-                  <v-col lg="6" xs="12">
+                <v-row justify="space-between">
+                  <v-col lg="6" md="12">
+                    <v-date-picker label="Select Date" v-model="newTalkDate"></v-date-picker>
+                  </v-col>
+                  <v-col lg="6" md="12">
+                    <v-time-picker label="Select Time" v-model="newTalkTime"></v-time-picker>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-select :items="speakers" label="Choose speakers" multiple v-model="newTalkSpeakerIds">
+                      <template slot="item" slot-scope="speaker">
+                        <v-avatar size="45px" tile>
+                          <img :src="speaker.item.imagePath"/>
+                        </v-avatar>
+                        <span class="selected-speaker-name ml-2">
+                          {{ speaker.item.text }}
+                          </span>
+                      </template>
+                      <template slot="selection" slot-scope="speaker">
+                        <v-col>
+                          <v-avatar size="32px">
+                            <img :src="speaker.item.imagePath"/>
+                          </v-avatar>
+                          <span class="selected-speaker-name ml-2">
+                          {{ speaker.item.text }}
+                          </span>
+                        </v-col>
+                      </template>
+                    </v-select>
+                  </v-col>
+                  <v-col class="mr-auto" cols="6">
                     <v-text-field label="Title" required v-model="newTalkTitle"></v-text-field>
                   </v-col>
-                  <v-col xs="12">
+                  <v-col cols="12">
                     <v-textarea label="Description" required v-model="newTalkDescription"></v-textarea>
                   </v-col>
-                  <!-- Type (select) -->
-                  <!-- Track (combobox) -->
+                  <v-col cols="6">
+                    <v-select :items="talkTypes" item-text="name" item-value="id" label="Type of talk" required
+                              v-model="newTalkTypeId"></v-select>
+                  </v-col>
+                  <v-col cols="6">
+                    <v-select :items="talkTracks" item-text="name" item-value="id" label="Track of talk" required
+                              v-model="newTalkTrackId"></v-select>
+                  </v-col>
                 </v-row>
               </v-container>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn @click="newTalkDialog = false" color="secondary darken-1" flat>Close</v-btn>
-              <v-btn :disabled="!validNewTalk" @click="addNewTalk" color="secondary darken-1" flat>
+              <v-btn @click="newTalkDialog = false" color="secondary darken-1" text>Close</v-btn>
+              <v-btn :disabled="!validNewTalk" @click="addNewTalk" color="secondary darken-1" text>
                 {{ addOrSaveTalk }}
               </v-btn>
             </v-card-actions>
@@ -95,19 +149,27 @@
     },
     data: () => ({
       newTalkIndex: null,
-      newTalkDateTime: null,
+      newTalkDate: null,
+      newTalkTime: null,
       newTalkTitle: null,
       newTalkDescription: null,
       newTalkTrackId: null,
       newTalkTypeId: null,
-      newTalkSpeakerId: null,
+      newTalkSpeakerIds: [],
       newTalkDialog: false,
-      talks: [],
-      speakers: []
+      talks: {},
+      speakers: [],
+      speakerRef: null,
+      talkTypes: [],
+      talkTracks: []
     }),
     computed: {
       validNewTalk () {
-        return this.newTalkTitle != null && this.newTalkDescription != null
+        return this.newTalkTitle != null &&
+          this.newTalkDescription != null &&
+          this.newTalkDate != null &&
+          this.newTalkTime != null &&
+          this.newTalkTypeId != null
       },
       addOrSaveTalk () {
         return this.newTalkIndex != null ? "Save" : "Add"
@@ -115,50 +177,103 @@
     },
     methods: {
       showNewTalkDialog () {
+        this.newTalkDate = null
+        this.newTalkTime = null
         this.newTalkTitle = null
         this.newTalkDescription = null
         this.newTalkTrackId = null
         this.newTalkTypeId = null
-        this.newTalkSpeakerId = null
+        this.newTalkSpeakerIds = []
+        this.newTalkIndex = null
         this.newTalkDialog = true
       },
       addNewTalk () {
         const update = {
+          datetime: `${this.newTalkDate} ${this.newTalkTime}`,
+          time: this.newTalkTime,
+          date: this.newTalkDate,
           title: this.newTalkTitle,
           description: this.newTalkDescription,
           trackId: this.newTalkTrackId,
           typeId: this.newTalkTypeId,
-          speakerId: this.newTalkSpeakerId
+          speakerIds: this.newTalkSpeakerIds
         }
 
-        if (this.newTalkIndex != null) {
-          this.talks[this.newTalkIndex] = update
-        } else {
-          this.talks.push(update)
+        if (!(update.datetime in this.talks)) {
+          this.talks[update.datetime] = {}
         }
+
+        let originalIndexDateTime
+        let originalTrackId = null
+
+        if (this.newTalkIndex != null) {
+          try {
+            console.log(this.newTalkIndex)
+            originalIndexDateTime = this.newTalkIndex.split(" ").slice(0, 2).join(" ")
+            originalTrackId = this.newTalkIndex.split(" ")[2]
+          } catch (err) {
+            originalIndexDateTime = this.newTalkIndex.split(" ").splice(0, 1)
+          }
+
+          // Clean up
+          delete this.talks[originalIndexDateTime][originalTrackId]
+          if (update.datetime !== originalIndexDateTime && this.talks[originalIndexDateTime].length === undefined) {
+            delete this.talks[originalIndexDateTime]
+          }
+        }
+        this.talks[update.datetime][this.newTalkTrackId] = update
 
         this.newTalkDialog = false
         this.changed()
       },
-      editTalk (index) {
-        const talk = this.talks[index]
+      editTalk (datetime, trackId) {
+        const talk = this.talks[datetime][trackId]
 
-        this.newTalkIndex = index
+        this.newTalkIndex = `${datetime} ${trackId}`
+        this.newTalkTime = talk.time
+        this.newTalkDate = talk.date
         this.newTalkTitle = talk.title
         this.newTalkDescription = talk.description
         this.newTalkTrackId = talk.trackId
         this.newTalkTypeId = talk.typeId
-        this.newTalkSpeakerId = talk.speakerId
+        this.newTalkSpeakerIds = talk.speakerIds
         this.newTalkDialog = true
       },
-      deleteTalk (index) {
-        this.talks.splice(index, 1)
+      deleteTalk (datetime, trackId) {
+        delete this.talks[datetime][trackId]
         this.changed()
+      },
+      findSpeaker (id) {
+        let speaker = this.speakers.find(e => e.value === id)
+        if (speaker === undefined) {
+          return { text: "", value: "", company: "" }
+        }
+        return speaker
+      },
+      speakerNames (speakerIds) {
+        return speakerIds.map(e => this.findSpeaker(e).text).join(", ")
+      },
+      speakerCompanies (speakerIds) {
+        return speakerIds.map(e => this.findSpeaker(e).company).join(", ")
+      },
+      talkTrackName (trackId) {
+        if (trackId == null) return ""
+        try {
+          return this.talkTracks.find(e => e.id === trackId).name
+        } catch (err) {
+          return ""
+        }
+      },
+      sortedTalks () {
+        return Object.keys(this.talks).sort()
       },
       save () {
         const update = {
           talks: this.talks,
           created: firebase.firestore.FieldValue.serverTimestamp(),
+          speakerRef: this.speakerRef,
+          talkTypes: this.talkTypes,
+          talkTracks: this.talkTracks,
           author: {
             displayName: firebase.auth().currentUser.displayName,
             uid: firebase.auth().currentUser.uid
@@ -174,23 +289,99 @@
           })
       },
       updateState (d) {
-        // {"time": "10:00am", "talks": []}
-        // schedule["time"] = []
-        // List:
-        //    - Get keys
-        //    - Split
-        this.talks = d.talks || []
+        console.log(d)
+        let talkTracks = this.talkTracks = d.talkTracks || []
+        let talkTypes = this.talkTypes = d.talkTypes || []
+        this.speakerRef = d.speakerRef || null
+
+        firebase.firestore().collection("speakers")
+          .orderBy("created", "desc")
+          .limit(1)
+          .get()
+          .then((speakers) => this.loadSpeakers(speakers.docs[0]))
+
+        if (talkTypes.length === 0) {
+          this.talkTypes = [
+            {
+              "id": "technical",
+              "name": "Technical",
+              "material_icon": "grade",
+              "description": "This talk is considered technical"
+            },
+            {
+              "id": "room",
+              "name": "Whole Room",
+              "material_icon": "all_inclusive",
+              "description": "This talk is can be enjoyed by everyone"
+            },
+            {
+              "id": "security",
+              "name": "Security",
+              "material_icon": "security",
+              "description": "This talk is focused on security"
+            },
+            {
+              "id": "fun",
+              "name": "Fun",
+              "material_icon": "tag_faces",
+              "description": "This talk is for fun"
+            },
+            {
+              "id": "registration",
+              "name": "Registration",
+              "material_icon": "android",
+              "description": "Welcome to the party pal"
+            },
+            {
+              "id": "lunch",
+              "name": "Lunch",
+              "material_icon": "restaurant",
+              "description": "Time for lunch"
+            },
+            {
+              "id": "party",
+              "name": "Party",
+              "material_icon": "cake",
+              "description": "After party"
+            },
+            {
+              "id": "break",
+              "name": "Break",
+              "material_icon": "free_breakfast",
+              "description": "Time for a break!"
+            }]
+          if (talkTracks.length === 0) {
+            this.talkTracks = [
+              {
+                "id": "main",
+                "name": "Main",
+                "color": "#F0BD35"
+              },
+              {
+                "id": "track1",
+                "name": "Track 1",
+                "color": "#CC6666"
+              },
+              {
+                "id": "track2",
+                "name": "Track 2",
+                "color": "#B5BD68"
+              }]
+          }
+        }
+        this.talks = d.talks || {}
       },
-      loadSpeakers (s) {
-        s.forEach((snap) => {
-          this.speakers = []
-          snap.forEach((speaker) => {
-            this.speakers.push({
-              "name": speaker.name,
-              "id": speaker.id
-            })
+      loadSpeakers (snap) {
+        this.speakers = []
+        snap.data().speakers.forEach((speaker) => {
+          this.speakers.push({
+            "text": speaker.name,
+            "value": speaker.id,
+            "imagePath": speaker.imagePath,
+            "company": speaker.company
           })
         })
+        this.speakerRef = snap.id
       }
     },
     mounted () {
@@ -198,15 +389,35 @@
         .orderBy("created", "desc")
         .limit(6)
         .onSnapshot((schedule) => this.loadCollection(schedule))
-
-      firebase.firestore().collection("speakers")
-        .orderBy("created", "desc")
-        .limit(1)
-        .onSnapshot((speakers) => this.loadSpeakers(speakers))
     }
   }
 </script>
 
 <style scoped>
+  .selected-speaker-name {
+    font-size: 18px;
+  }
 
+  .talk-title {
+    font-size: 28px;
+  }
+
+  .speaker-card {
+    background-color: #555555;
+  }
+
+  .speaker-names-title {
+    font-size: 22px;
+    color: #fff;
+  }
+
+  .speaker-companies-title {
+    font-size: 18px;
+    color: #ddd;
+  }
+
+  .track-title {
+    font-size: 18px;
+    color: #aaa;
+  }
 </style>
