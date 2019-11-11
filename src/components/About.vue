@@ -326,9 +326,9 @@
         this.twitter = d.twitter
         this.website = d.website
         this.contactEmail = d.contactEmail
-        this.venueName = d.venue.name
-        this.venueAddress = d.venue.address
-        this.venueImagePath = d.venue.imagePath
+        this.venueName = d.venue != null ? d.venue.name : null
+        this.venueAddress = d.venue != null ? d.venue.address : null
+        this.venueImagePath = d.venue != null ? d.venue.imagePath : null
         this.links = d.links || []
         this.linkTypes = d.linkTypes || []
       },

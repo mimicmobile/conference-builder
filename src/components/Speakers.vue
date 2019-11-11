@@ -213,6 +213,7 @@
         this.newSpeakerCompany = speaker.company
         this.newSpeakerTwitter = speaker.twitter
         this.newSpeakerLinkedIn = speaker.linkedIn
+        this.newSpeakerGithub = speaker.github
         this.newSpeakerImagePath = speaker.imagePath
         this.newSpeakerDialog = true
       },
