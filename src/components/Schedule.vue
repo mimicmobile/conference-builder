@@ -14,7 +14,7 @@
           <v-card text>
             <v-row :key="talkKey" class="pa-5 schedule-group-item" v-for="talkKey in sortedTalks()">
               <v-col cols="12">{{ talkKey }}</v-col>
-              <v-col :key="talk.track" lg="6" md="6" v-for="talk in talks[talkKey]" xs="6">
+              <v-col :key="talk.track" cols="12" lg="6" v-for="talk in talks[talkKey]">
                 <v-card @click="editTalk(talk.datetime, talk.trackId)" class="speaker-card">
                   <v-card-title class="talk-title">
                     {{ talk.title }}
@@ -40,7 +40,7 @@
                 </v-card>
               </v-col>
             </v-row>
-            <v-col class="text-center" cols="12" wrap>
+            <v-col class="text-center" cols="12" wrap :class="{ hide: readOnly }">
               <v-btn @click="showNewTalkDialog" color="accent" rounded>
                 <v-icon small>add</v-icon>
                 Add new talk
@@ -76,7 +76,7 @@
                           </span>
                       </template>
                       <template slot="selection" slot-scope="speaker">
-                        <v-col>
+                        <v-col cols="12">
                           <v-avatar size="50px">
                             <img :src="speaker.item.imagePath"/>
                           </v-avatar>
@@ -97,12 +97,12 @@
                                 label="Description"
                                 required v-model="newTalkDescription"></v-textarea>
                   </v-col>
-                  <v-col cols="6">
+                  <v-col cols="12" lg="6">
                     <v-select :readonly="readOnly" :items="talkTypes" item-text="name" item-value="id"
                               label="Type of talk" required
                               v-model="newTalkTypeId"></v-select>
                   </v-col>
-                  <v-col cols="6" v-if="displayEditTracks(newTalkTrackId)">
+                  <v-col cols="12" lg="6" v-if="displayEditTracks(newTalkTrackId)">
                     <v-select :readonly="readOnly" :items="talkTracks" item-text="name" item-value="id" label="Track"
                               required
                               v-model="newTalkTrackId"></v-select>
@@ -173,6 +173,9 @@
       talkTracks: []
     }),
     computed: {
+      readOnly () {
+        return this.$route.meta.readOnly
+      },
       validNewTalk () {
         return this.newTalkTitle != null &&
           this.newTalkDescription != null &&
@@ -402,9 +405,6 @@
           })
         })
         this.speakerRef = snap.id
-      },
-      readOnly () {
-        return this.$route.meta.readOnly
       },
       displayEditTracks (talkTracks) {
         if (this.readOnly) {
