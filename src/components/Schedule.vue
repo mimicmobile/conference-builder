@@ -217,9 +217,14 @@
 
           // Clean up
           delete this.talks[originalIndexDateTime][originalTrackId]
-          if (update.datetime !== originalIndexDateTime && this.talks[originalIndexDateTime].length === undefined) {
+          if (update.datetime !== originalIndexDateTime && Object.keys(this.talks[originalIndexDateTime]).length === 0) {
             delete this.talks[originalIndexDateTime]
           }
+        }
+        if (this.talks[update.datetime][this.newTalkTrackId] != null) {
+          // Check if talk already exists in this slot w/ this track
+          this.talks[update.datetime][null] = this.talks[update.datetime][this.newTalkTrackId]
+          this.talks[update.datetime][this.newTalkTrackId].trackId = null
         }
         this.talks[update.datetime][this.newTalkTrackId] = update
 

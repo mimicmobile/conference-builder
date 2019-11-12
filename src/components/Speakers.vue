@@ -211,9 +211,9 @@
         this.newSpeakerName = speaker.name
         this.newSpeakerBio = speaker.bio
         this.newSpeakerCompany = speaker.company
-        this.newSpeakerTwitter = speaker.twitter
-        this.newSpeakerLinkedIn = speaker.linkedIn
-        this.newSpeakerGithub = speaker.github
+        this.newSpeakerTwitter = speaker.twitter || null
+        this.newSpeakerLinkedIn = speaker.linkedIn || null
+        this.newSpeakerGithub = speaker.github || null
         this.newSpeakerImagePath = speaker.imagePath
         this.newSpeakerDialog = true
       },
