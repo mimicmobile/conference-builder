@@ -4,7 +4,7 @@
       app
       clipped
       fixed
-      :class="{ hide: loggedOut }"
+      v-if="!loggedOut"
       v-model="drawer"
     >
       <v-list dense>
