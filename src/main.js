@@ -25,7 +25,7 @@ new Vue({
     firebase.initializeApp(config)
     firebase.auth().onAuthStateChanged((user) => {
       if (!user) {
-        this.$router.push("/auth")
+        // this.$router.push("/")
         this.$store.commit("SET_CURRENT_USER", null)
       } else {
         this.$store.commit("SET_CURRENT_USER", { "displayName": user.displayName })

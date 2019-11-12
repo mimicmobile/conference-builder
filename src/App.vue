@@ -4,6 +4,7 @@
       app
       clipped
       fixed
+      :class="{ hide: loggedOut }"
       v-model="drawer"
     >
       <v-list dense>
@@ -132,6 +133,9 @@
       },
       isSchedule () {
         return this.$route.name === "Schedule"
+      },
+      loggedOut () {
+        return this.$route.meta.readOnly === true
       }
     },
     mounted () {
@@ -182,6 +186,7 @@
       },
       logOut () {
         firebase.auth().signOut()
+        this.$router.push("auth")
       }
     }
   }

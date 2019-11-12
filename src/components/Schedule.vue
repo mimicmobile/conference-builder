@@ -51,19 +51,22 @@
         <v-dialog max-width="800px" v-model="newTalkDialog">
           <v-card>
             <v-card-title>
-              <span class="headline">Add a new talk</span>
+              <span class="headline">{{ editTalkTitle(newTalkDate, newTalkTime) }}</span>
             </v-card-title>
             <v-card-text>
               <v-container>
                 <v-row justify="space-between">
-                  <v-col lg="6" md="12">
-                    <v-date-picker label="Select Date" v-model="newTalkDate"></v-date-picker>
-                  </v-col>
-                  <v-col lg="6" md="12">
-                    <v-time-picker label="Select Time" v-model="newTalkTime"></v-time-picker>
-                  </v-col>
-                  <v-col cols="12">
-                    <v-select :items="speakers" label="Choose speakers" multiple v-model="newTalkSpeakerIds">
+                  <v-row v-if="!readOnly">
+                    <v-col lg="6" md="12">
+                      <v-date-picker label="Select Date" v-model="newTalkDate"></v-date-picker>
+                    </v-col>
+                    <v-col lg="6" md="12">
+                      <v-time-picker label="Select Time" v-model="newTalkTime"></v-time-picker>
+                    </v-col>
+                  </v-row>
+                  <v-col cols="12" v-if="newTalkSpeakerIds.length >= 1 && readOnly || !readOnly">
+                    <v-select :readonly="readOnly" :items="speakers" :label="editTalkSpeakers"
+                              multiple v-model="newTalkSpeakerIds">
                       <template slot="item" slot-scope="speaker">
                         <v-avatar size="45px" tile>
                           <img :src="speaker.item.imagePath"/>
@@ -74,7 +77,7 @@
                       </template>
                       <template slot="selection" slot-scope="speaker">
                         <v-col>
-                          <v-avatar size="32px">
+                          <v-avatar size="50px">
                             <img :src="speaker.item.imagePath"/>
                           </v-avatar>
                           <span class="selected-speaker-name ml-2">
@@ -84,18 +87,24 @@
                       </template>
                     </v-select>
                   </v-col>
-                  <v-col class="mr-auto" cols="6">
-                    <v-text-field label="Title" required v-model="newTalkTitle"></v-text-field>
+                  <v-col class="mr-auto" cols="12">
+                    <v-text-field v-if="!readOnly" class="talk-title" label="Title" required
+                                  v-model="newTalkTitle"></v-text-field>
+                    <span v-else class="talk-title">{{ newTalkTitle }}</span>
                   </v-col>
                   <v-col cols="12">
-                    <v-textarea label="Description" required v-model="newTalkDescription"></v-textarea>
+                    <v-textarea class="talk-description" :full-width="readOnly" :readonly="readOnly" :auto-grow="true"
+                                label="Description"
+                                required v-model="newTalkDescription"></v-textarea>
                   </v-col>
                   <v-col cols="6">
-                    <v-select :items="talkTypes" item-text="name" item-value="id" label="Type of talk" required
+                    <v-select :readonly="readOnly" :items="talkTypes" item-text="name" item-value="id"
+                              label="Type of talk" required
                               v-model="newTalkTypeId"></v-select>
                   </v-col>
-                  <v-col cols="6">
-                    <v-select :items="talkTracks" item-text="name" item-value="id" label="Track of talk" required
+                  <v-col cols="6" v-if="displayEditTracks(newTalkTrackId)">
+                    <v-select :readonly="readOnly" :items="talkTracks" item-text="name" item-value="id" label="Track"
+                              required
                               v-model="newTalkTrackId"></v-select>
                   </v-col>
                 </v-row>
@@ -104,7 +113,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn @click="newTalkDialog = false" color="secondary darken-1" text>Close</v-btn>
-              <v-btn :disabled="!validNewTalk" @click="addNewTalk" color="secondary darken-1" text>
+              <v-btn :hidden="readOnly" :disabled="!validNewTalk" @click="addNewTalk" color="secondary darken-1" text>
                 {{ addOrSaveTalk }}
               </v-btn>
             </v-card-actions>
@@ -173,9 +182,15 @@
       },
       addOrSaveTalk () {
         return this.newTalkIndex != null ? "Save" : "Add"
+      },
+      editTalkSpeakers () {
+        return this.readOnly ? "" : "Speakers"
       }
     },
     methods: {
+      editTalkTitle (talkDate, talkTime) {
+        return !this.readOnly ? "Add a new talk" : talkDate + " @ " + talkTime
+      },
       showNewTalkDialog () {
         this.newTalkDate = null
         this.newTalkTime = null
@@ -387,6 +402,15 @@
           })
         })
         this.speakerRef = snap.id
+      },
+      readOnly () {
+        return this.$route.meta.readOnly
+      },
+      displayEditTracks (talkTracks) {
+        if (this.readOnly) {
+          return talkTracks
+        }
+        return true
       }
     },
     mounted () {
@@ -405,6 +429,10 @@
 
   .talk-title {
     font-size: 28px;
+  }
+
+  .talk-description {
+    font-size: 14px;
   }
 
   .speaker-card {

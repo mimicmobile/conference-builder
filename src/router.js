@@ -2,7 +2,6 @@ import VueRouter from "vue-router"
 import Auth from "./components/Auth.vue"
 
 import store from "./store"
-import Home from "./components/Home"
 import Speakers from "./components/Speakers"
 import Schedule from "./components/Schedule"
 import About from "./components/About"
@@ -10,7 +9,7 @@ import About from "./components/About"
 const router = new VueRouter({
   mode: "history",
   routes: [
-    { path: "/", component: Home, meta: { name: "Home" } },
+    { path: "/", component: Schedule, meta: { name: "Schedule", readOnly: true } },
     { path: "/speakers/:loadedId?", component: Speakers, name: "Speakers", props: true },
     { path: "/schedule/:loadedId?", component: Schedule, name: "Schedule", props: true },
     { path: "/about/:loadedId?", component: About, name: "About", props: true },
@@ -19,7 +18,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (store.state.currentUser === null) {
+  if (store.state.currentUser === null && to.path !== "/") {
     if (to.path === "/auth" || store.state.isLoading) {
       next()
     } else {
