@@ -428,6 +428,7 @@
   }
 
   .talk-title {
+    word-break: break-word;
     font-size: 28px;
   }
 
