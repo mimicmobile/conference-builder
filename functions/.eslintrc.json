@@ -1,7 +1,7 @@
 {
   "parserOptions": {
     // Required for certain syntax usages
-    "ecmaVersion": 6
+    "ecmaVersion": 8
   },
   "plugins": [
     "promise"
@@ -80,7 +80,7 @@
     // Require using Error objects as Promise rejection reasons
     "prefer-promise-reject-errors": 2,
 
-    // Enforce “for” loop updateHeaderImage clause moving the counter in the right direction
+    // Enforce “for” loop update clause moving the counter in the right direction
     "for-direction": 2,
 
     // Enforce return statements in getters

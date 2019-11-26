@@ -29,6 +29,9 @@ new Vue({
         this.$store.commit("SET_CURRENT_USER", null)
       } else {
         this.$store.commit("SET_CURRENT_USER", { "displayName": user.displayName })
+        user.getIdTokenResult(true).then((e) => {
+          console.log(`admin? ${e.claims["admin"]} | claims: ${e.claims}`)
+        })
       }
       this.$store.commit("SET_LOADING", false)
     })

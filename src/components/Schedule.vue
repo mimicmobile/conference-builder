@@ -48,8 +48,8 @@
             </v-col>
           </v-card>
         </v-col>
-        <v-dialog max-width="800px" v-model="newTalkDialog">
-          <v-card>
+        <v-dialog fullscreen v-model="newTalkDialog">
+          <v-card color="primary">
             <v-card-title>
               <span class="headline">{{ editTalkTitle(newTalkDate, newTalkTime) }}</span>
             </v-card-title>

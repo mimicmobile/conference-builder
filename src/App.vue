@@ -74,8 +74,10 @@
       </v-list>
     </v-navigation-drawer>
     <v-app-bar app clipped-left color="primary" fixed>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon v-if="!loggedOut" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn @click="$router.push('/auth')">Admin</v-btn>
     </v-app-bar>
     <v-content>
       <v-container class="pt-5" v-if="isLoading">
@@ -155,14 +157,14 @@
       },
       saveSnapshots (collectionName, collection) {
         switch (collectionName) {
-        case "about":
-          this.aboutSnapshots = collection
-          break
-        case "speakers":
-          this.speakerSnapshots = collection
-          break
-        case "schedule":
-          this.scheduleSnapshots = collection
+          case "about":
+            this.aboutSnapshots = collection
+            break
+          case "speakers":
+            this.speakerSnapshots = collection
+            break
+          case "schedule":
+            this.scheduleSnapshots = collection
         }
       },
       fetchSnapshots (collectionName) {
