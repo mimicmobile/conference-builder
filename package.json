@@ -12,6 +12,7 @@
   "dependencies": {
     "firebase": "^6.1.0",
     "firebaseui": "^4.0.0",
+    "set-value": "^3.0.1",
     "vue": "^2.5.11",
     "vuetify": "^2.1.9",
     "vuetify-datetime-picker": "^2.1.1",

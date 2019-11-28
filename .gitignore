@@ -16,3 +16,4 @@ yarn-error.log
 *.rules
 firestore.indexes.json
 functions/node_modules/
+.env*
