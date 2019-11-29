@@ -13,7 +13,6 @@ yarn-error.log
 .env
 .firebase/
 .firebaserc
-*.rules
 firestore.indexes.json
 functions/node_modules/
 .env*
