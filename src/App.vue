@@ -2,6 +2,7 @@
   <v-app id="inspire">
     <v-navigation-drawer
       app
+      clipped
       v-if="isAdmin"
       v-model="drawer"
     >
