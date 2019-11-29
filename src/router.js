@@ -13,7 +13,7 @@ const router = new VueRouter({
     { path: "/speakers/:loadedId?", component: Speakers, name: "Speakers", props: true },
     { path: "/schedule/:loadedId?", component: Schedule, name: "Schedule", props: true },
     { path: "/about/:loadedId?", component: About, name: "About", props: true },
-    { path: "/auth", component: Auth, name: "Auth" }
+    { path: "/auth", component: Auth, name: "Authenticate" }
   ]
 })
 

@@ -2,12 +2,10 @@
   <v-app id="inspire">
     <v-navigation-drawer
       app
-      clipped
-      fixed
       v-if="isAdmin"
       v-model="drawer"
     >
-      <v-list dense>
+      <v-list>
         <v-list-item to="/speakers">
           <v-list-item-action>
             <v-icon>person</v-icon>
@@ -68,7 +66,9 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="isAdmin"></v-app-bar-nav-icon>
       <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn @click="authButtonClick" v-if="!isLoading">{{ authButton }}</v-btn>
+      <v-btn @click="authButtonClick" icon v-if="!isLoading">
+        <v-icon>{{ authButton }}</v-icon>
+      </v-btn>
     </v-app-bar>
     <v-content>
       <v-container class="pt-5" v-if="isLoading">
@@ -131,7 +131,7 @@
         return this.$store.state.isAdmin
       },
       authButton () {
-        return this.currentUser ? "Logout" : "Login"
+        return this.currentUser ? "logout" : "exit_to_app"
       }
     },
     mounted () {

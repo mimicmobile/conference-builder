@@ -48,7 +48,7 @@
             </v-col>
           </v-card>
         </v-col>
-        <v-dialog max-width="800" v-model="newTalkDialog">
+        <v-dialog :fullscreen="isMobile" max-width="800" v-model="newTalkDialog">
           <v-card>
             <v-card-title>
               <span class="headline">{{ editTalkTitle(newTalkDate, newTalkTime) }}</span>
@@ -175,6 +175,9 @@
     computed: {
       readOnly () {
         return !this.$store.state.isAdmin
+      },
+      isMobile () {
+        return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
       },
       validNewTalk () {
         return this.newTalkTitle != null &&
