@@ -48,8 +48,8 @@
             </v-col>
           </v-card>
         </v-col>
-        <v-dialog fullscreen v-model="newTalkDialog">
-          <v-card color="primary">
+        <v-dialog max-width="800" v-model="newTalkDialog">
+          <v-card>
             <v-card-title>
               <span class="headline">{{ editTalkTitle(newTalkDate, newTalkTime) }}</span>
             </v-card-title>
@@ -174,7 +174,7 @@
     }),
     computed: {
       readOnly () {
-        return this.$route.meta.readOnly
+        return !this.$store.state.isAdmin
       },
       validNewTalk () {
         return this.newTalkTitle != null &&

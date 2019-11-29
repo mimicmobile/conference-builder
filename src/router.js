@@ -9,7 +9,7 @@ import About from "./components/About"
 const router = new VueRouter({
   mode: "history",
   routes: [
-    { path: "/", component: Schedule, name: "Schedule", meta: { readOnly: true } },
+    { path: "/", component: Schedule, name: "Schedule" },
     { path: "/speakers/:loadedId?", component: Speakers, name: "Speakers", props: true },
     { path: "/schedule/:loadedId?", component: Schedule, name: "Schedule", props: true },
     { path: "/about/:loadedId?", component: About, name: "About", props: true },

@@ -8,11 +8,15 @@ export default new Vuex.Store({
   state: {
     currentUser: null,
     isLoading: true,
-    darkTheme: true
+    darkTheme: true,
+    isAdmin: false
   },
   mutations: {
     SET_CURRENT_USER (state, user) {
       state.currentUser = user
+    },
+    SET_ADMIN (state, toggle) {
+      state.isAdmin = toggle
     },
     SET_LOADING (state, loading) {
       state.isLoading = loading

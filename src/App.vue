@@ -4,7 +4,7 @@
       app
       clipped
       fixed
-      v-if="!loggedOut"
+      v-if="isAdmin"
       v-model="drawer"
     >
       <v-list dense>
@@ -62,22 +62,13 @@
             {{ snapshot.date }} by {{ snapshot.author }}
           </v-chip>
         </div>
-        <v-divider></v-divider>
-        <v-list-item @click="logOut" v-if="currentUser">
-          <v-list-item-action>
-            <v-icon>logout</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Logout ({{ currentUser.displayName }})</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <v-app-bar app clipped-left color="primary" fixed>
-      <v-app-bar-nav-icon v-if="!loggedOut" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="isAdmin"></v-app-bar-nav-icon>
       <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn @click="$router.push('/auth')">Admin</v-btn>
+      <v-btn @click="authButtonClick" v-if="!isLoading">{{ authButton }}</v-btn>
     </v-app-bar>
     <v-content>
       <v-container class="pt-5" v-if="isLoading">
@@ -136,8 +127,11 @@
       isSchedule () {
         return this.$route.name === "Schedule"
       },
-      loggedOut () {
-        return this.$route.meta.readOnly === true
+      isAdmin () {
+        return this.$store.state.isAdmin
+      },
+      authButton () {
+        return this.currentUser ? "Logout" : "Login"
       }
     },
     mounted () {
@@ -149,6 +143,9 @@
       source: String
     },
     methods: {
+      authButtonClick () {
+        this.currentUser ? this.logOut() : this.logIn()
+      },
       snapshotClick (collectionName, id) {
         this.$router.push({ path: "/" + collectionName + "/" + id, params: { "loadedId": id } })
       },
@@ -188,7 +185,11 @@
       },
       logOut () {
         firebase.auth().signOut()
-        this.$router.push("auth")
+        this.$store.commit("SET_ADMIN", false)
+        this.$router.push("/")
+      },
+      logIn () {
+        this.$router.push("/auth")
       }
     }
   }
