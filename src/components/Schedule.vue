@@ -40,7 +40,7 @@
                 </v-card>
               </v-col>
             </v-row>
-            <v-col class="text-center" cols="12" wrap :class="{ hide: readOnly }">
+            <v-col :class="{ hide: readOnly }" class="text-center" cols="12" wrap>
               <v-btn @click="showNewTalkDialog" color="accent" rounded>
                 <v-icon small>add</v-icon>
                 Add new talk
@@ -65,7 +65,7 @@
                     </v-col>
                   </v-row>
                   <v-col cols="12" v-if="newTalkSpeakerIds.length >= 1 && readOnly || !readOnly">
-                    <v-select :readonly="readOnly" :items="speakers" :label="editTalkSpeakers"
+                    <v-select :items="speakers" :label="editTalkSpeakers" :readonly="readOnly"
                               multiple v-model="newTalkSpeakerIds">
                       <template slot="item" slot-scope="speaker">
                         <v-avatar size="45px" tile>
@@ -88,22 +88,22 @@
                     </v-select>
                   </v-col>
                   <v-col class="mr-auto" cols="12">
-                    <v-text-field v-if="!readOnly" class="talk-title" label="Title" required
+                    <v-text-field class="talk-title" label="Title" required v-if="!readOnly"
                                   v-model="newTalkTitle"></v-text-field>
-                    <span v-else class="talk-title">{{ newTalkTitle }}</span>
+                    <span class="talk-title" v-else>{{ newTalkTitle }}</span>
                   </v-col>
                   <v-col cols="12">
-                    <v-textarea class="talk-description" :full-width="readOnly" :readonly="readOnly" :auto-grow="true"
+                    <v-textarea :auto-grow="true" :full-width="readOnly" :readonly="readOnly" class="talk-description"
                                 label="Description"
                                 required v-model="newTalkDescription"></v-textarea>
                   </v-col>
                   <v-col cols="12" lg="6">
-                    <v-select :readonly="readOnly" :items="talkTypes" item-text="name" item-value="id"
+                    <v-select :items="talkTypes" :readonly="readOnly" item-text="name" item-value="id"
                               label="Type of talk" required
                               v-model="newTalkTypeId"></v-select>
                   </v-col>
                   <v-col cols="12" lg="6" v-if="displayEditTracks(newTalkTrackId)">
-                    <v-select :readonly="readOnly" :items="talkTracks" item-text="name" item-value="id" label="Track"
+                    <v-select :items="talkTracks" :readonly="readOnly" item-text="name" item-value="id" label="Track"
                               required
                               v-model="newTalkTrackId"></v-select>
                   </v-col>
@@ -113,7 +113,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn @click="newTalkDialog = false" color="secondary darken-1" text>Close</v-btn>
-              <v-btn :hidden="readOnly" :disabled="!validNewTalk" @click="addNewTalk" color="secondary darken-1" text>
+              <v-btn :disabled="!validNewTalk" :hidden="readOnly" @click="addNewTalk" color="secondary darken-1" text>
                 {{ addOrSaveTalk }}
               </v-btn>
             </v-card-actions>
@@ -456,5 +456,9 @@
   .track-title {
     font-size: 18px;
     color: #aaa;
+  }
+
+  img {
+    object-fit: cover;
   }
 </style>
