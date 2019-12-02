@@ -10,18 +10,47 @@
   <v-container grid-list-md text-xs-center v-else>
     <form v-on:change="changed">
       <v-row wrap>
-        <v-col class="text-center">
-          <div class="header-image-cont">
+        <v-col cols="12" class="text-center">
+          <v-card flat outlined class="header-image-cont">
             <img :src="headerImageOrPlaceholder" alt class="header-image"/>
             <div class="header-text-cont">
               <v-progress-circular color="accent" indeterminate v-if="isHeaderLoading"></v-progress-circular>
             </div>
-          </div>
+          </v-card>
           <v-btn color="accent" rounded @click="clickUpload('headerImageUpload')">
             <v-icon small>add</v-icon>
             Set header image
           </v-btn>
           <v-file-input class="hide" id="headerImageUpload" @change="updateHeaderImage"></v-file-input>
+        </v-col>
+
+        <v-col lg="6" sm="12" class="text-center" justify-center>
+          <div class="background-image-cont">
+            <img :src="backgroundImageOrPlaceholder" alt class="header-image"/>
+            <div class="header-text-cont">
+              <v-progress-circular color="accent" indeterminate v-if="isBackgroundLoading"></v-progress-circular>
+            </div>
+          </div>
+          <v-row class="background-button-cont">
+            <v-btn color="accent" rounded @click="clickUpload('backgroundImageUpload')">
+              <v-icon small>add</v-icon>
+              Set background image
+            </v-btn>
+            <v-btn color="accent" rounded @click="removeBackgroundImage()">
+              <v-icon small>remove</v-icon>
+              Remove image
+            </v-btn>
+          </v-row>
+          <v-file-input class="hide" id="backgroundImageUpload" @change="updateBackgroundImage"></v-file-input>
+        </v-col>
+
+        <v-col lg="6" xs="12" class="v-color-picker-cont">
+          <v-card outlined flat>
+            <v-card-title>
+              Background color
+            </v-card-title>
+            <v-color-picker canvas-height="100" mode="hexa" v-model="backgroundColor"></v-color-picker>
+          </v-card>
         </v-col>
 
         <v-col cols="12">
@@ -175,6 +204,8 @@
     return `https://via.placeholder.com/${dimension}/454545/454545`
   }
 
+  const defaultBackgroundColor = "#0b6167"
+
   export default {
     name: "About",
     mixins: [commonMixin],
@@ -185,9 +216,11 @@
     },
     data: () => ({
       isHeaderLoading: false,
+      isBackgroundLoading: false,
       isVenueImageLoading: false,
       isNewLinkImageLoading: false,
       headerImage: false,
+      backgroundImage: false,
       description: null,
       twitter: null,
       website: null,
@@ -201,12 +234,17 @@
       newLinkImagePath: null,
       newLinkTypeId: null,
       newLinkDialog: false,
+      backgroundColor: null,
+      originalBackgroundColor: null,
       links: [],
       linkTypes: []
     }),
     computed: {
       headerImageOrPlaceholder () {
         return this.headerImage || getPlaceholderImage("800x260")
+      },
+      backgroundImageOrPlaceholder () {
+        return this.backgroundImage || getPlaceholderImage("600x200")
       },
       venueImageOrPlaceholder () {
         return this.venueImagePath || getPlaceholderImage("200x200")
@@ -222,6 +260,10 @@
       }
     },
     methods: {
+      removeBackgroundImage () {
+        this.backgroundImage = null
+        this.changed()
+      },
       showNewLinkDialog () {
         this.newLinkName = null
         this.newLinkWebsite = null
@@ -294,6 +336,8 @@
       save () {
         let update = {
           headerImage: this.headerImage,
+          backgroundImage: this.backgroundImage,
+          backgroundColor: this.backgroundColor,
           description: this.description,
           twitter: this.twitter,
           website: this.website,
@@ -322,6 +366,9 @@
       },
       updateState (d) {
         this.headerImage = d.headerImage
+        this.backgroundImage = d.backgroundImage
+        this.originalBackgroundColor = d.backgroundColor || defaultBackgroundColor
+        this.backgroundColor = d.backgroundColor || defaultBackgroundColor
         this.description = d.description
         this.twitter = d.twitter
         this.website = d.website
@@ -334,6 +381,10 @@
       },
       updateHeaderImage (file) {
         this.updateImage(file, "header/", "headerImage", "isHeaderLoading")
+        this.changed()
+      },
+      updateBackgroundImage (file) {
+        this.updateImage(file, "background/", "backgroundImage", "isBackgroundLoading")
         this.changed()
       },
       updateVenueImage (file) {
@@ -350,6 +401,14 @@
         .orderBy("created", "desc")
         .limit(6)
         .onSnapshot((aboutCollection) => this.loadCollection(aboutCollection))
+
+      this.$watch("backgroundColor", () => {
+        if (this.originalBackgroundColor !== this.backgroundColor) {
+          console.log("bg changed")
+          this.changed()
+        }
+        this.originalBackgroundColor = this.backgroundColor
+      })
     }
   }
 </script>
@@ -364,6 +423,7 @@
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
+    padding: 20px;
   }
 
   .header-image-cont span {
@@ -425,6 +485,26 @@
     height: 100%;
   }
 
+  .background-image-cont {
+    width: auto;
+    height: auto;
+    min-height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .background-button-cont {
+    margin-right: 20px;
+    margin-left: 20px;
+    justify-content: space-around;
+  }
+
+  .background-button-cont button {
+    margin-bottom: 10px;
+  }
+
   .link-group {
     display: grid;
     grid-template-columns: repeat(auto-fill, 260px);
@@ -453,6 +533,16 @@
 
   .link-group-button-cont {
     justify-content: space-evenly;
+  }
+
+  .v-color-picker {
+    font-size: 14px;
+  }
+
+  .v-color-picker-cont {
+    display: flex;
+    justify-content: center;
+    height: 330px;
   }
 
   @media screen and (max-width: 800px) {
