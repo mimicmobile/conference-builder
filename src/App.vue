@@ -155,14 +155,14 @@
       },
       saveSnapshots (collectionName, collection) {
         switch (collectionName) {
-          case "about":
-            this.aboutSnapshots = collection
-            break
-          case "speakers":
-            this.speakerSnapshots = collection
-            break
-          case "schedule":
-            this.scheduleSnapshots = collection
+        case "about":
+          this.aboutSnapshots = collection
+          break
+        case "speakers":
+          this.speakerSnapshots = collection
+          break
+        case "schedule":
+          this.scheduleSnapshots = collection
         }
       },
       fetchSnapshots (collectionName) {

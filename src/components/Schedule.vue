@@ -229,7 +229,6 @@
 
         if (this.newTalkIndex != null) {
           try {
-            console.log(this.newTalkIndex)
             originalIndexDateTime = this.newTalkIndex.split(" ").slice(0, 2).join(" ")
             originalTrackId = this.newTalkIndex.split(" ")[2]
           } catch (err) {
@@ -315,7 +314,6 @@
           })
       },
       updateState (d) {
-        console.log(d)
         let talkTracks = this.talkTracks = d.talkTracks || []
         let talkTypes = this.talkTypes = d.talkTypes || []
         this.speakerRef = d.speakerRef || null
