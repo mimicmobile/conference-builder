@@ -11,7 +11,7 @@
     <form v-on:change="changed">
       <v-row>
         <v-col cols="12">
-          <v-card text>
+          <v-card class="schedule-card" text>
             <v-row :key="talkKey" class="pa-5 schedule-group-item" v-for="talkKey in sortedTalks()">
               <v-col cols="12">{{ talkKey }}</v-col>
               <v-col :key="talk.track" cols="12" lg="6" v-for="talk in talks[talkKey]">
@@ -49,7 +49,7 @@
           </v-card>
         </v-col>
         <v-dialog :fullscreen="isMobile" max-width="800" v-model="newTalkDialog">
-          <v-card>
+          <v-card class="new-talk-card">
             <v-card-title>
               <span class="headline">{{ editTalkTitle(newTalkDate, newTalkTime) }}</span>
             </v-card-title>
@@ -112,9 +112,10 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
+              <v-btn @click="deleteTalk" color="red darken-1" text v-if="!isNewTalk">Delete</v-btn>
               <v-btn @click="newTalkDialog = false" color="secondary darken-1" text>Close</v-btn>
               <v-btn :disabled="!validNewTalk" :hidden="readOnly" @click="addNewTalk" color="secondary darken-1" text>
-                {{ addOrSaveTalk }}
+                Save
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -186,16 +187,23 @@
           this.newTalkTime != null &&
           this.newTalkTypeId != null
       },
-      addOrSaveTalk () {
-        return this.newTalkIndex != null ? "Save" : "Add"
-      },
       editTalkSpeakers () {
         return this.readOnly ? "" : "Speakers"
+      },
+      isNewTalk () {
+        return this.newTalkIndex == null
       }
     },
     methods: {
       editTalkTitle (talkDate, talkTime) {
         return !this.readOnly ? "Add a new talk" : talkDate + " @ " + talkTime
+      },
+      deleteTalk () {
+        if (confirm("Delete this talk?")) {
+          this.removeTalk()
+          this.newTalkDialog = false
+          this.changed()
+        }
       },
       showNewTalkDialog () {
         this.newTalkDate = null
@@ -224,23 +232,10 @@
           this.talks[update.datetime] = {}
         }
 
-        let originalIndexDateTime
-        let originalTrackId = null
-
-        if (this.newTalkIndex != null) {
-          try {
-            originalIndexDateTime = this.newTalkIndex.split(" ").slice(0, 2).join(" ")
-            originalTrackId = this.newTalkIndex.split(" ")[2]
-          } catch (err) {
-            originalIndexDateTime = this.newTalkIndex.split(" ").splice(0, 1)
-          }
-
-          // Clean up
-          delete this.talks[originalIndexDateTime][originalTrackId]
-          if (update.datetime !== originalIndexDateTime && Object.keys(this.talks[originalIndexDateTime]).length === 0) {
-            delete this.talks[originalIndexDateTime]
-          }
+        if (!this.isNewTalk) {
+          this.removeTalk(update.datetime)
         }
+
         if (this.talks[update.datetime][this.newTalkTrackId] != null) {
           // Check if talk already exists in this slot w/ this track
           this.talks[update.datetime][null] = this.talks[update.datetime][this.newTalkTrackId]
@@ -250,6 +245,23 @@
 
         this.newTalkDialog = false
         this.changed()
+      },
+      removeTalk (newDateTime) {
+        let originalIndexDateTime
+        let originalTrackId = null
+
+        try {
+          originalIndexDateTime = this.newTalkIndex.split(" ").slice(0, 2).join(" ")
+          originalTrackId = this.newTalkIndex.split(" ")[2]
+        } catch (err) {
+          originalIndexDateTime = this.newTalkIndex.split(" ").splice(0, 1)
+        }
+
+        // Clean up
+        delete this.talks[originalIndexDateTime][originalTrackId]
+        if (newDateTime !== originalIndexDateTime && Object.keys(this.talks[originalIndexDateTime]).length === 0) {
+          delete this.talks[originalIndexDateTime]
+        }
       },
       editTalk (datetime, trackId) {
         const talk = this.talks[datetime][trackId]
@@ -263,10 +275,6 @@
         this.newTalkTypeId = talk.typeId
         this.newTalkSpeakerIds = talk.speakerIds
         this.newTalkDialog = true
-      },
-      deleteTalk (datetime, trackId) {
-        delete this.talks[datetime][trackId]
-        this.changed()
       },
       findSpeaker (id) {
         let speaker = this.speakers.find(e => e.value === id)
@@ -449,6 +457,14 @@
   .speaker-companies-title {
     font-size: 18px;
     color: #ddd;
+  }
+
+  .schedule-card {
+    margin-bottom: 60px;
+  }
+
+  .new-talk-card {
+    margin-bottom: 60px;
   }
 
   .track-title {
